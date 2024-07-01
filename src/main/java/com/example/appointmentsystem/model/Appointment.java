@@ -1,7 +1,9 @@
 package com.example.appointmentsystem.model;
 
-import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+
+import javax.persistence.*;
 
 @Entity
 public class Appointment {
