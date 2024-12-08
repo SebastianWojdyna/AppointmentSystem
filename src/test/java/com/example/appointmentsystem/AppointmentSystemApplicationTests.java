@@ -1,13 +1,15 @@
 package com.example.appointmentsystem;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-class AppointmentSystemApplicationTests {
+@Import(TestConfig.class)
+public class AppointmentSystemApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+
 
 }

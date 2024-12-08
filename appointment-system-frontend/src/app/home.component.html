@@ -1,0 +1,72 @@
+<div class="container mt-4 d-flex justify-content-center align-items-center">
+  <div class="row w-100">
+    <div class="col-md-4 form-container">
+      <h3>Utwórz wizytę</h3>
+      <form (ngSubmit)="createAndPayAppointment()">
+        <div class="form-group">
+          <label for="patientName">Imię pacjenta</label>
+          <input type="text" id="patientName" class="form-control" [(ngModel)]="newAppointment.patientName" name="patientName" required>
+        </div>
+        <div class="form-group">
+          <label for="doctor">Lekarz</label>
+          <select id="doctor" class="form-control" [(ngModel)]="newAppointment.doctor" name="doctor" required>
+            <option *ngFor="let doctor of doctors" [ngValue]="doctor">{{doctor.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="appointmentTime">Data wizyty</label>
+          <input type="datetime-local" id="appointmentTime" class="form-control" [(ngModel)]="newAppointment.appointmentTime" name="appointmentTime" required>
+        </div>
+        <div class="form-group">
+          <label for="service">Usługa</label>
+          <select id="service" class="form-control" [(ngModel)]="newAppointment.service" name="service" required>
+            <option *ngFor="let service of services" [ngValue]="service">{{service.name}} - {{service.price}} zł</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Utwórz i zapłać</button>
+        <button (click)="createAndPayOnSiteAppointment()" type="button" class="btn btn-secondary btn-block">Utwórz i zapłać na miejscu</button>
+      </form>
+    </div>
+    <div class="col-md-4 appointment-list-container">
+      <h3>Wizyty</h3>
+      <div class="appointment-list">
+        <ul class="list-group">
+          <li *ngFor="let appointment of appointments" class="list-group-item appointment-item">
+            <div class="appointment-details">
+              <strong>{{appointment.patientName}}</strong><br>
+              Data: {{appointment.appointmentTime | date:'short'}}<br>
+              Lekarz: {{appointment.doctor?.name}}<br>
+              Usługa: {{appointment.service?.name}}<br>
+              Zapłacono: {{appointment.paid ? 'Tak' : 'Nie'}}
+            </div>
+            <button class="btn btn-danger btn-sm cancel-button" (click)="cancelAppointment(appointment)">Odwołaj</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-4 image-container">
+      <img src="assets/images/registration.png" alt="Registration" class="img-fluid">
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmCancelModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmCancelModalLabel">Potwierdź odwołanie</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>W przypadku odwołania wizyty wcześniej przelane środki zostaną utracone. Czy na pewno chcesz odwołać tę wizytę?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
+        <button type="button" class="btn btn-danger" (click)="confirmCancel()">Potwierdź</button>
+      </div>
+    </div>
+  </div>
+</div>

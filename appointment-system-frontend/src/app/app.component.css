@@ -1,0 +1,53 @@
+.container {
+  display: flex;
+  align-items: stretch;
+}
+
+.form-container,
+.appointment-list-container {
+  flex: 1;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.appointment-list-container {
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 10px;
+}
+
+h3 {
+  margin-bottom: 20px;
+}
+
+form {
+  flex-grow: 1;
+}
+
+.appointment-list {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.navbar {
+  padding: 10px 20px;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.5em;
+  margin-left: 20px;
+}
+
+.navbar-nav .nav-item .btn {
+  margin-right: 20px;
+}
+
+.ml-auto {
+  margin-left: auto;
+}

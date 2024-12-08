@@ -72,7 +72,7 @@ public class PayUService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(accessToken);
 
-        double totalAmount = appointment.getService().getPrice() * 100; // PayU requires amount in cents
+        double totalAmount = appointment.getService().getPrice() * 100; // PayU wymaga kwoty w groszach
         logger.info("Calculated totalAmount: " + totalAmount);
 
         if (totalAmount <= 0) {
@@ -112,8 +112,9 @@ public class PayUService {
                     throw new RuntimeException("Order ID is null in PayU response");
                 }
 
-                // Zaktualizuj orderId w bazie danych
+                // Aktualizacja orderId w bazie danych
                 appointment.setOrderId(orderId);
+                appointment.setPaid(true); // Ustawienie płatności na true
                 appointmentRepository.save(appointment);
 
                 return redirectUri;
@@ -129,6 +130,8 @@ public class PayUService {
             throw new RuntimeException("Failed to create payment", e);
         }
     }
+
+
 
     public String processPayment(String orderId) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findByOrderId(orderId);

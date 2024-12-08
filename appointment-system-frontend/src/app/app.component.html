@@ -1,0 +1,20 @@
+<div class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">System Rezerwacji Wizyt</a>
+  <div class="collapse navbar-collapse">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item" *ngIf="isLoggedIn">
+        <button class="btn btn-outline-danger" (click)="logout()">Wyloguj</button>
+      </li>
+      <li class="nav-item" *ngIf="!isLoggedIn && router.url === '/login'">
+        <button class="btn btn-outline-primary" (click)="navigateToRegister()">Zarejestruj się</button>
+      </li>
+      <li class="nav-item" *ngIf="!isLoggedIn && router.url === '/register'">
+        <button class="btn btn-outline-primary" (click)="navigateToLogin()">Zaloguj się</button>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <router-outlet></router-outlet>
+</div>

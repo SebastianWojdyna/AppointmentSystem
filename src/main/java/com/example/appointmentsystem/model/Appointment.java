@@ -1,9 +1,7 @@
 package com.example.appointmentsystem.model;
 
-
-import java.time.LocalDateTime;
-
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class Appointment {
@@ -23,6 +21,10 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "service_id")
     private AppointmentServiceType service;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // Gettery i settery
     public Long getId() {
@@ -79,5 +81,13 @@ public class Appointment {
 
     public void setService(AppointmentServiceType service) {
         this.service = service;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

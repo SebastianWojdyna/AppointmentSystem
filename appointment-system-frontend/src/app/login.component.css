@@ -1,0 +1,23 @@
+.container {
+  height: 100vh; /* 100% wysokości widoku */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+  margin-bottom: 20px;
+}
+
+.img-fluid.custom-img {
+  max-height: 900px; /* Wysokość obrazka */
+  max-width: 100%;
+  object-fit: contain;
+}
