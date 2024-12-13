@@ -55,9 +55,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         return http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll() // Publiczne endpointy
-                .antMatchers("/api/admin/**").hasRole("ADMIN") // Tylko ADMIN
-                .anyRequest().authenticated() // Wszystkie inne endpointy wymagają uwierzytelnienia
+                .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/doctor/**").hasRole("DOCTOR")
+                .antMatchers("/api/receptionist/**").hasRole("RECEPTIONIST")
+                .antMatchers("/api/patient/**").hasRole("PATIENT")
+                .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Dodanie filtra JWT
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Bezstanowe sesje

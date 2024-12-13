@@ -13,7 +13,7 @@ export class RegisterComponent {
   constructor(private http: HttpClient, private router: Router) {}
 
   register() {
-    this.http.post('http://localhost:8080/api/users/register', this.user).subscribe((response: any) => {
+    this.http.post('http://localhost:8080/api/auth/register', this.user).subscribe((response: any) => {
       alert('Rejestracja zakończona sukcesem');
       this.router.navigate(['/login']);
     }, error => {
