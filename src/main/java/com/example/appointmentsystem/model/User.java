@@ -17,7 +17,7 @@ public class User implements UserDetails {
     private String username;
     private String email;
     private String password;
-
+    private boolean isActive = true; // Domyślnie użytkownik jest aktywny
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -97,6 +97,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }
 
