@@ -34,23 +34,35 @@ public class JwtAuthenticationFilter implements Filter {
         String token = getJwtFromRequest(httpRequest);
 
         if (StringUtils.hasText(token)) {
-            Claims claims = jwtUtil.extractClaims(token);
-            String username = claims.getSubject();
+            try {
+                // Wyciągnij email z tokena
+                String email = jwtUtil.extractEmail(token);
 
-            // Znajdź użytkownika po nazwie użytkownika
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                // Znajdź użytkownika w bazie danych po emailu
+                User user = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user, null, user.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+                // Utwórz obiekt Authentication i ustaw go w SecurityContext
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        user, null, user.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (Exception e) {
+                // Jeśli token jest nieważny lub wystąpił inny błąd, po prostu przejdź dalej
+                SecurityContextHolder.clearContext();
+            }
         }
 
         chain.doFilter(request, response);
     }
 
+    /**
+     * Pobranie tokena JWT z nagłówka Authorization.
+     *
+     * @param request obiekt HttpServletRequest
+     * @return token JWT lub null, jeśli nie znaleziono
+     */
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {

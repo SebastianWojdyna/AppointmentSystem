@@ -20,13 +20,18 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor';
 
+import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+
 @NgModule({
   declarations: [
     AppComponent,
     RegisterComponent,
     LoginComponent,
     HomeComponent,
-    ConfirmationComponent
+    ConfirmationComponent,
+    AdminDashboardComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +45,8 @@ import { AuthInterceptor } from './auth.interceptor';
     PaymentService,
     DoctorService,
     ServiceService,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
   bootstrap: [AppComponent]
 })
