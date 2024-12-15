@@ -5,6 +5,9 @@ import { RegisterComponent } from './register.component';
 import { HomeComponent } from './home.component';
 import { ConfirmationComponent } from './confirmation.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { DoctorDashboardComponent } from './components/doctor-dashboard/doctor-dashboard.component';
+import { ReceptionistDashboardComponent } from './components/receptionist-dashboard/receptionist-dashboard.component';
+import { PatientDashboardComponent } from './components/patient-dashboard/patient-dashboard.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -13,13 +16,14 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'confirmation', component: ConfirmationComponent },
   { path: 'admin/dashboard', component: AdminDashboardComponent },
+  { path: 'doctor/dashboard', component: DoctorDashboardComponent },
+  { path: 'receptionist/dashboard', component: ReceptionistDashboardComponent },
+  { path: 'patient/dashboard', component: PatientDashboardComponent },
   { path: '**', redirectTo: '' }
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes, { useHash: false }) // Obsługa routingu bez hasha (#)
-  ],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

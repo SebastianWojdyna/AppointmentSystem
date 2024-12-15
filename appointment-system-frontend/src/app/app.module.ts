@@ -9,19 +9,11 @@ import { RegisterComponent } from './register.component';
 import { LoginComponent } from './login.component';
 import { HomeComponent } from './home.component';
 import { ConfirmationComponent } from './confirmation.component';
-
-import { AppointmentService } from './appointment.service';
-import { PaymentService } from './payment.service';
-import { DoctorService } from './doctor.service';
-import { ServiceService } from './service.service';
-
-import { ReactiveFormsModule } from '@angular/forms';
-
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './auth.interceptor';
-
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
-
+import { DoctorDashboardComponent } from './components/doctor-dashboard/doctor-dashboard.component';
+import { ReceptionistDashboardComponent } from './components/receptionist-dashboard/receptionist-dashboard.component';
+import { PatientDashboardComponent } from './components/patient-dashboard/patient-dashboard.component';
+import { ReactiveFormsModule } from '@angular/forms';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 @NgModule({
@@ -31,23 +23,21 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
     LoginComponent,
     HomeComponent,
     ConfirmationComponent,
-    AdminDashboardComponent
+    AdminDashboardComponent,
+    DoctorDashboardComponent,
+    ReceptionistDashboardComponent,
+    PatientDashboardComponent
   ],
   imports: [
     BrowserModule,
-    ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule,
   ],
   providers: [
-    AppointmentService,
-    PaymentService,
-    DoctorService,
-    ServiceService,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
-  ],
+  { provide: LocationStrategy, useClass: HashLocationStrategy }
+],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

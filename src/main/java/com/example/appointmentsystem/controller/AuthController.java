@@ -38,33 +38,33 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
-        String email = loginRequest.get("email"); // Zmiana na email
-        String password = loginRequest.get("password");
+        String email = loginRequest.get("email"); // Pobranie emaila
+        String password = loginRequest.get("password"); // Pobranie hasła
 
         try {
-            // Autoryzacja użytkownika za pomocą email i hasła
+            // Próba autentykacji
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Pobierz zalogowanego użytkownika z bazy
+            // Pobierz użytkownika na podstawie emaila
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
-            // Generowanie tokena JWT
+            // Wygeneruj token JWT
             String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
             // Przygotowanie odpowiedzi
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
-            response.put("role", user.getRole());
             response.put("email", user.getEmail());
             response.put("username", user.getUsername());
+            response.put("role", user.getRole().name());
 
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response); // Zwróć odpowiedź z tokenem i szczegółami
         } catch (Exception e) {
-            // W przypadku błędu zwróć status 401
+            // Jeśli logowanie nie powiedzie się, zwróć status 401
             return ResponseEntity.status(401).body("Invalid email or password");
         }
     }
@@ -80,7 +80,7 @@ public class AuthController {
         String password = registrationRequest.get("password");
         String role = registrationRequest.get("role");
 
-        // Sprawdź, czy użytkownik o podanym emailu lub nazwie użytkownika już istnieje
+        // Walidacja unikalności emaila i nazwy użytkownika
         if (userRepository.findByUsername(username).isPresent()) {
             return ResponseEntity.badRequest().body("Username is already taken");
         }
@@ -88,7 +88,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Email is already in use");
         }
 
-        // Utwórz nowego użytkownika
+        // Utwórz użytkownika
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
