@@ -1,5 +1,6 @@
 package com.example.appointmentsystem.service;
 
+import com.example.appointmentsystem.model.Role;
 import com.example.appointmentsystem.model.User;
 import com.example.appointmentsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,4 +49,12 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    public User updateUserRole(Long id, Role newRole) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        user.setRole(newRole);
+        return userRepository.save(user);
+    }
+
 }

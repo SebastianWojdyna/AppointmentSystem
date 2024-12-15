@@ -15,6 +15,8 @@ import { ReceptionistDashboardComponent } from './components/receptionist-dashbo
 import { PatientDashboardComponent } from './components/patient-dashboard/patient-dashboard.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { AuthInterceptor } from './auth.interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
     ReactiveFormsModule,
   ],
   providers: [
-  { provide: LocationStrategy, useClass: HashLocationStrategy }
+  { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
 ],
   bootstrap: [AppComponent]
 })

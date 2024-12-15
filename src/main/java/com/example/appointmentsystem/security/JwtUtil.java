@@ -33,7 +33,7 @@ public class JwtUtil {
             logger.info("Generating JWT token for email: {}, role: {}", email, role);
             String token = Jwts.builder()
                     .setSubject(email) // Ustawienie email jako subject
-                    .claim("role", "ROLE_" + role)
+                    .claim("role", role)
                     .setIssuedAt(new Date()) // Ustawienie czasu wydania
                     .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) // Ustawienie czasu wygaśnięcia
                     .signWith(SignatureAlgorithm.HS512, jwtSecret) // Podpisanie tokena algorytmem HS512

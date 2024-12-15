@@ -3,80 +3,96 @@ package com.example.appointmentsystem.controller;
 import com.example.appointmentsystem.model.Role;
 import com.example.appointmentsystem.model.User;
 import com.example.appointmentsystem.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-
-import java.util.Map; // Import dla Map
-
-
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+
     @Autowired
     private UserService userService;
+
     @GetMapping("/dashboard")
-    @PreAuthorize("hasRole('ADMIN')") // Tylko administrator ma dostęp
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String getAdminDashboard() {
         return "Welcome to the admin dashboard!";
     }
 
-    // Pobierz listę użytkowników
     @GetMapping("/users")
-    @PreAuthorize("hasRole('ADMIN')")
-    public Page<User> getUsers(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size) {
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Page<User>> getUsers(@RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return userService.getAllUsers(pageable);
+        logger.info("Fetching user list, page: {}, size: {}", page, size);
+        Page<User> users = userService.getAllUsers(pageable);
+        return ResponseEntity.ok(users);
     }
 
-    // Dodaj użytkownika
     @PostMapping("/users")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.registerUser(user));
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        logger.info("Adding new user: {}", user.getEmail());
+        User savedUser = userService.registerUser(user);
+        return ResponseEntity.ok(Map.of("message", "User added successfully", "user", savedUser));
     }
 
-    // Aktualizuj użytkownika
     @PutMapping("/users/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        logger.info("Updating user with ID: {}", id);
+        User user = userService.updateUser(id, updatedUser);
+        return ResponseEntity.ok(Map.of("message", "User updated successfully", "user", user));
     }
 
-    // Usuń użytkownika
     @DeleteMapping("/users/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        logger.info("Deleting user with ID: {}", id);
         userService.deleteUser(id);
-        return ResponseEntity.ok("User deleted successfully");
+        return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
     }
 
-    @PutMapping("/users/{id}/role")
-    @PreAuthorize("hasRole('ADMIN')")
+    /**
+     * Aktualizacja roli użytkownika.
+     */
+    @PatchMapping("/users/{id}/role")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateUserRole(@PathVariable Long id, @RequestBody Map<String, String> roleRequest) {
-        User user = userService.findUserById(id);
-        if (user == null) {
-            return ResponseEntity.badRequest().body("User not found");
-        }
-
         try {
-            Role newRole = Role.valueOf(roleRequest.get("role").toUpperCase()); // Pobieranie roli z JSON
-            user.setRole(newRole);
-            userService.updateUser(id, user); // Aktualizacja użytkownika
-            return ResponseEntity.ok("User role updated successfully");
+            logger.info("Updating role for user with ID: {}", id);
+
+            String roleString = roleRequest.get("role");
+            if (roleString == null || roleString.isEmpty()) {
+                logger.warn("No role provided in request");
+                return ResponseEntity.badRequest().body(Map.of("error", "Role cannot be empty"));
+            }
+
+            Role newRole = Role.valueOf(roleString.toUpperCase());
+            User updatedUser = userService.updateUserRole(id, newRole);
+
+            logger.info("Role updated successfully for user: {}, new role: {}", updatedUser.getUsername(), newRole);
+            return ResponseEntity.ok(Map.of(
+                    "message", "User role updated successfully",
+                    "user", updatedUser
+            ));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid role provided");
+            logger.error("Invalid role provided: {}", roleRequest.get("role"), e);
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid role provided"));
+        } catch (Exception e) {
+            logger.error("Error updating role for user ID: {}", id, e);
+            return ResponseEntity.status(500).body(Map.of("error", "Error updating role", "details", e.getMessage()));
         }
     }
-
 }
-
-

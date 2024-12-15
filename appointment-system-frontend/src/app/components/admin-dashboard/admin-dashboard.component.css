@@ -1,8 +1,25 @@
-.container {
-  margin-top: 20px;
+/* Wycentrowanie kontenera na środku ekranu */
+.centered-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  width: 70%; /* Szerokość głównego kontenera */
 }
 
-.list-group-item a {
-  text-decoration: none;
-  color: #007bff;
+/* Centrowanie tabeli i formularzy wewnątrz kontenera */
+.card {
+  width: 100%; /* Dopasowanie do szerokości kontenera */
+  margin-bottom: 20px;
+}
+
+/* Poprawki dla tabeli */
+.table {
+  margin: auto; /* Wycentrowanie tabeli */
+  text-align: center;
+}
+
+.thead-dark th {
+  text-align: center;
 }

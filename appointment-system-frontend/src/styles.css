@@ -1,0 +1,19 @@
+/* Centrowanie głównej zawartości */
+.container {
+  max-width: 1200px; /* Maksymalna szerokość kontenera */
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f8f9fa; /* Jasne tło */
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px 0;
+}

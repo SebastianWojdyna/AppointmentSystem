@@ -61,10 +61,10 @@ public class SecurityConfig {
                 .cors().and()
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/doctor/**").hasRole("DOCTOR")
-                .antMatchers("/api/receptionist/**").hasRole("RECEPTIONIST")
-                .antMatchers("/api/patient/**").hasRole("PATIENT")
+                .antMatchers("/api/admin/**").access("hasAuthority('ROLE_ADMIN')")
+                .antMatchers("/api/doctor/**").hasAuthority("DOCTOR")
+                .antMatchers("/api/receptionist/**").hasAuthority("RECEPTIONIST")
+                .antMatchers("/api/patient/**").hasAuthority("PATIENT")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Dodanie filtra JWT
@@ -80,7 +80,7 @@ public class SecurityConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Wszystkie endpointy
                         .allowedOrigins("http://localhost:4200") // Adres Angulara
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Dozwolone metody HTTP
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS") // Dozwolone metody HTTP
                         .allowedHeaders("*") // Pozwól na wszystkie nagłówki
                         .allowCredentials(true); // Obsługuje ciasteczka/sesje
             }

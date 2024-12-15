@@ -1,5 +1,6 @@
-<div class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="/home">System Rezerwacji Wizyt</a>
+<!-- Pasek nawigacyjny -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand font-weight-bold" href="/home">System Rezerwacji Wizyt</a>
   <button
     class="navbar-toggler"
     type="button"
@@ -13,24 +14,13 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ml-auto">
-      <!-- Opcje dla ADMINA -->
-      <li class="nav-item" *ngIf="isAdmin">
-        <a class="nav-link" routerLink="/admin/dashboard">Panel Admina</a>
-      </li>
-      <!-- Opcje dla PACJENTA -->
-      <li class="nav-item" *ngIf="isPatient">
-        <a class="nav-link" routerLink="/home">Moje Wizyty</a>
-      </li>
       <!-- Wyświetl "Wyloguj" dla zalogowanych użytkowników -->
       <li class="nav-item" *ngIf="isLoggedIn">
         <button class="btn btn-outline-danger" (click)="logout()">Wyloguj</button>
       </li>
       <!-- Wyświetl "Zaloguj" i "Zarejestruj się" dla niezalogowanych użytkowników -->
       <li class="nav-item" *ngIf="!isLoggedIn">
-        <button
-          class="btn btn-outline-primary mr-2"
-          (click)="navigateToLogin()"
-        >
+        <button class="btn btn-outline-primary mr-2" (click)="navigateToLogin()">
           Zaloguj
         </button>
       </li>
@@ -41,8 +31,11 @@
       </li>
     </ul>
   </div>
-</div>
+</nav>
 
-<div class="container mt-4">
-  <router-outlet></router-outlet>
+<!-- Główna zawartość -->
+<div class="container mt-5 d-flex justify-content-center">
+  <div class="col-lg-10 col-md-12">
+    <router-outlet></router-outlet>
+  </div>
 </div>

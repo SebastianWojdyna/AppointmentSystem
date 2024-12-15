@@ -1,15 +1,73 @@
-<div class="container mt-4">
-  <h1>Panel Administratora</h1>
-  <p>Wybierz jedną z opcji poniżej:</p>
-  <ul class="list-group">
-    <li class="list-group-item">
-      <a routerLink="/admin/users">Zarządzaj użytkownikami</a>
-    </li>
-    <li class="list-group-item">
-      <a routerLink="/admin/doctors">Zarządzaj lekarzami</a>
-    </li>
-    <li class="list-group-item">
-      <a routerLink="/admin/services">Zarządzaj usługami</a>
-    </li>
-  </ul>
+<div class="container-fluid d-flex flex-column align-items-center justify-content-center mt-4" style="max-width: 1200px; margin: auto;">
+  <h1 class="mb-4 text-center">Panel Administratora</h1>
+
+  <!-- Formularz dodawania nowego użytkownika -->
+  <div class="card mb-4 w-100">
+    <div class="card-header text-center">
+      <h4>Dodaj nowego użytkownika</h4>
+    </div>
+    <div class="card-body">
+      <form (submit)="addUser()">
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" [(ngModel)]="newUser.username" name="username" placeholder="Podaj username" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" [(ngModel)]="newUser.email" name="email" placeholder="Podaj email" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="password">Hasło</label>
+            <input type="password" class="form-control" id="password" [(ngModel)]="newUser.password" name="password" placeholder="Podaj hasło" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="role">Rola</label>
+            <select class="form-control" id="role" [(ngModel)]="newUser.role" name="role" required>
+              <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="text-center">
+          <button type="submit" class="btn btn-success">Dodaj użytkownika</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista użytkowników -->
+  <div class="card w-100">
+    <div class="card-header text-center">
+      <h4>Lista użytkowników</h4>
+    </div>
+    <div class="card-body">
+      <table class="table table-striped table-bordered text-center">
+        <thead class="thead-dark">
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Rola</th>
+          <th>Akcje</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <select [(ngModel)]="user.role" class="form-control form-control-sm" (change)="changeUserRole(user.id, user.role)">
+              <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Usuń</button>
+            <button class="btn btn-warning btn-sm ml-2" (click)="setUpdatedUser(user)">Edytuj</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

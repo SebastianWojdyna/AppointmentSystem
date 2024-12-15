@@ -2,8 +2,10 @@ package com.example.appointmentsystem.security;
 
 import com.example.appointmentsystem.model.User;
 import com.example.appointmentsystem.repository.UserRepository;
-import io.jsonwebtoken.Claims;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
@@ -15,8 +17,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 public class JwtAuthenticationFilter implements Filter {
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
@@ -31,43 +37,66 @@ public class JwtAuthenticationFilter implements Filter {
             throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+        // Logowanie nagłówków
+        String authHeader = httpRequest.getHeader("Authorization");
+        logger.info("Authorization header: {}", authHeader);
+
         String token = getJwtFromRequest(httpRequest);
+        logger.info("Extracted JWT token: {}", token);
 
         if (StringUtils.hasText(token)) {
             try {
-                // Wyciągnij email z tokena
+                // Wyciągnij email i rolę z tokena
                 String email = jwtUtil.extractEmail(token);
+                String role = jwtUtil.extractRole(token);
 
-                // Znajdź użytkownika w bazie danych po emailu
+                logger.info("Token details - Email: {}, Role: {}", email, role);
+
+                // Znajdź użytkownika w bazie danych
                 User user = userRepository.findByEmail(email)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+                        .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+                logger.info("User found in database: {}", user.getEmail());
 
-                // Utwórz obiekt Authentication i ustaw go w SecurityContext
+                // Ustaw rolę z prefiksem ROLE_
+                String roleWithPrefix = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+                logger.info("Setting role with prefix: {}", roleWithPrefix);
+
+                List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(roleWithPrefix));
+
+                // Tworzenie autoryzacji
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        user, null, user.getAuthorities());
+                        user, null, authorities
+                );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
 
+                // Ustawienie kontekstu bezpieczeństwa
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                logger.info("Authentication set in SecurityContextHolder: User={}, Role={}", email, roleWithPrefix);
+
             } catch (Exception e) {
-                // Jeśli token jest nieważny lub wystąpił inny błąd, po prostu przejdź dalej
                 SecurityContextHolder.clearContext();
+                logger.error("Error during JWT authentication: {}", e.getMessage(), e);
             }
+        } else {
+            logger.warn("No JWT token found in the request.");
         }
 
         chain.doFilter(request, response);
     }
 
     /**
-     * Pobranie tokena JWT z nagłówka Authorization.
-     *
-     * @param request obiekt HttpServletRequest
-     * @return token JWT lub null, jeśli nie znaleziono
+     * Pobiera token JWT z nagłówka Authorization.
      */
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
+        logger.info("Received Authorization header: {}", bearerToken);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+            String extractedToken = bearerToken.substring(7);
+            logger.info("Extracted Bearer token: {}", extractedToken);
+            return extractedToken;
         }
+        logger.warn("No valid Bearer token found in Authorization header.");
         return null;
     }
 }
