@@ -13,6 +13,14 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ml-auto">
+      <!-- Opcje dla ADMINA -->
+      <li class="nav-item" *ngIf="isAdmin">
+        <a class="nav-link" routerLink="/admin/dashboard">Panel Admina</a>
+      </li>
+      <!-- Opcje dla PACJENTA -->
+      <li class="nav-item" *ngIf="isPatient">
+        <a class="nav-link" routerLink="/home">Moje Wizyty</a>
+      </li>
       <!-- Wyświetl "Wyloguj" dla zalogowanych użytkowników -->
       <li class="nav-item" *ngIf="isLoggedIn">
         <button class="btn btn-outline-danger" (click)="logout()">Wyloguj</button>

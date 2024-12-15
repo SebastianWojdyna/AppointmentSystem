@@ -8,17 +8,40 @@ import { AdminDashboardComponent } from './components/admin-dashboard/admin-dash
 import { DoctorDashboardComponent } from './components/doctor-dashboard/doctor-dashboard.component';
 import { ReceptionistDashboardComponent } from './components/receptionist-dashboard/receptionist-dashboard.component';
 import { PatientDashboardComponent } from './components/patient-dashboard/patient-dashboard.component';
+import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'home', component: HomeComponent },
+  {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['PATIENT', 'ADMIN'] } // Dostęp dla PACJENTA i ADMINA
+  },
   { path: 'confirmation', component: ConfirmationComponent },
-  { path: 'admin/dashboard', component: AdminDashboardComponent },
-  { path: 'doctor/dashboard', component: DoctorDashboardComponent },
-  { path: 'receptionist/dashboard', component: ReceptionistDashboardComponent },
-  { path: 'patient/dashboard', component: PatientDashboardComponent },
+  {
+    path: 'admin/dashboard',
+    component: AdminDashboardComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['ADMIN'] } // Dostęp tylko dla ADMINA
+  },
+  { path: 'doctor/dashboard',
+    component: DoctorDashboardComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['DOCTOR'] }
+  },
+  { path: 'receptionist/dashboard',
+    component: ReceptionistDashboardComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['RECEPTIONIST'] }
+  },
+  { path: 'patient/dashboard',
+    component: PatientDashboardComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['PATIENT'] }
+  },
   { path: '**', redirectTo: '' }
 ];
 

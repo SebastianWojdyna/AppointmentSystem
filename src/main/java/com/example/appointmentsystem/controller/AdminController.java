@@ -9,20 +9,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
 
     @Autowired
     private UserService userService;
-
     @GetMapping("/dashboard")
+    @PreAuthorize("hasRole('ADMIN')") // Tylko administrator ma dostęp
     public String getAdminDashboard() {
         return "Welcome to the admin dashboard!";
     }
 
     // Pobierz listę użytkowników
     @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<User> getUsers(@RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -31,18 +34,21 @@ public class AdminController {
 
     // Dodaj użytkownika
     @PostMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> addUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.registerUser(user));
     }
 
     // Aktualizuj użytkownika
     @PutMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         return ResponseEntity.ok(userService.updateUser(id, updatedUser));
     }
 
     // Usuń użytkownika
     @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("User deleted successfully");

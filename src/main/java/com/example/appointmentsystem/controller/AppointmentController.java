@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -22,12 +23,14 @@ public class AppointmentController {
     private UserService userService;
 
     @GetMapping
+    @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<List<Appointment>> getUserAppointments(Authentication authentication) {
         User user = userService.findByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("User not found"));
         return ResponseEntity.ok(appointmentService.getAppointmentsByUserId(user.getId()));  // Pobieranie wizyt użytkownika
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<Appointment> createAppointment(@RequestBody Appointment appointment, Authentication authentication) {
         User user = userService.findByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("User not found"));
         appointment.setUser(user);  // Ustawienie użytkownika
@@ -35,12 +38,14 @@ public class AppointmentController {
     }
 
     @PutMapping("/payment/{orderId}")
+    @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<Void> updatePaymentStatus(@PathVariable String orderId, @RequestParam boolean isPaid) {
         appointmentService.updatePaymentStatus(orderId, isPaid);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<Void> deleteAppointment(@PathVariable Long id, Authentication authentication) {
         User user = userService.findByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("User not found"));
         appointmentService.deleteAppointment(id, user.getId());
