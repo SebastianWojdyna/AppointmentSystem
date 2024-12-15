@@ -34,75 +34,72 @@ public class AuthController {
 
     /**
      * Logowanie użytkownika.
-     * Sprawdza dane uwierzytelniające (email i hasło) i generuje token JWT.
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
-        String email = loginRequest.get("email"); // Pobranie emaila
-        String password = loginRequest.get("password"); // Pobranie hasła
+        String email = loginRequest.get("email");
+        String password = loginRequest.get("password");
 
         try {
-            // Próba autentykacji
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Pobierz użytkownika na podstawie emaila
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
-            // Wygeneruj token JWT
             String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
-            // Przygotowanie odpowiedzi
+            // Poprawna odpowiedź jako JSON
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("email", user.getEmail());
             response.put("username", user.getUsername());
             response.put("role", user.getRole().name());
 
-            return ResponseEntity.ok(response); // Zwróć odpowiedź z tokenem i szczegółami
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            // Jeśli logowanie nie powiedzie się, zwróć status 401
-            return ResponseEntity.status(401).body("Invalid email or password");
+            // Odpowiedź dla błędu logowania
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Invalid email or password");
+            return ResponseEntity.status(401).body(errorResponse);
         }
     }
 
     /**
-     * Rejestracja nowego użytkownika.
-     * Hashuje hasło i zapisuje użytkownika w bazie danych.
+     * Rejestracja nowego użytkownika z domyślną rolą PATIENT.
      */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> registrationRequest) {
         String username = registrationRequest.get("username");
         String email = registrationRequest.get("email");
         String password = registrationRequest.get("password");
-        String role = registrationRequest.get("role");
 
-        // Walidacja unikalności emaila i nazwy użytkownika
+        // Sprawdzenie, czy użytkownik istnieje
         if (userRepository.findByUsername(username).isPresent()) {
-            return ResponseEntity.badRequest().body("Username is already taken");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Username is already taken");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
         if (userRepository.findByEmail(email).isPresent()) {
-            return ResponseEntity.badRequest().body("Email is already in use");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Email is already in use");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
 
-        // Utwórz użytkownika
+        // Tworzenie nowego użytkownika z rolą PATIENT
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password)); // Hashowanie hasła
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole(Role.PATIENT); // Domyślna rola to PATIENT
 
-        try {
-            user.setRole(Role.valueOf(role.toUpperCase())); // Ustawienie roli
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid role provided");
-        }
-
-        // Zapisz użytkownika w bazie danych
         userRepository.save(user);
 
-        return ResponseEntity.ok("User registered successfully");
+        // Zwrot odpowiedzi jako poprawny JSON
+        Map<String, String> successResponse = new HashMap<>();
+        successResponse.put("message", "User registered successfully with role PATIENT");
+        return ResponseEntity.ok(successResponse);
     }
 }
