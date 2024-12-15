@@ -1,15 +1,35 @@
 <div class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">System Rezerwacji Wizyt</a>
-  <div class="collapse navbar-collapse">
+  <a class="navbar-brand" href="/home">System Rezerwacji Wizyt</a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarNav"
+    aria-controls="navbarNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ml-auto">
+      <!-- Wyświetl "Wyloguj" dla zalogowanych użytkowników -->
       <li class="nav-item" *ngIf="isLoggedIn">
         <button class="btn btn-outline-danger" (click)="logout()">Wyloguj</button>
       </li>
-      <li class="nav-item" *ngIf="!isLoggedIn && router.url === '/login'">
-        <button class="btn btn-outline-primary" (click)="navigateToRegister()">Zarejestruj się</button>
+      <!-- Wyświetl "Zaloguj" i "Zarejestruj się" dla niezalogowanych użytkowników -->
+      <li class="nav-item" *ngIf="!isLoggedIn">
+        <button
+          class="btn btn-outline-primary mr-2"
+          (click)="navigateToLogin()"
+        >
+          Zaloguj
+        </button>
       </li>
-      <li class="nav-item" *ngIf="!isLoggedIn && router.url === '/register'">
-        <button class="btn btn-outline-primary" (click)="navigateToLogin()">Zaloguj się</button>
+      <li class="nav-item" *ngIf="!isLoggedIn">
+        <button class="btn btn-outline-secondary" (click)="navigateToRegister()">
+          Zarejestruj się
+        </button>
       </li>
     </ul>
   </div>
