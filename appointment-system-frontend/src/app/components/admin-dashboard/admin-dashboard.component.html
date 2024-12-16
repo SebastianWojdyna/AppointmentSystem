@@ -26,11 +26,12 @@
             </select>
           </div>
         </div>
+        <!-- Pole specjalizacji tylko dla roli DOCTOR -->
         <div *ngIf="newUser.role === 'DOCTOR'" class="form-group">
           <label>Specjalizacja</label>
-          <input type="text" class="form-control" [(ngModel)]="newUser.specialization" name="specialization" required>
+          <input type="text" class="form-control" [(ngModel)]="newUser.specialization" name="specialization" placeholder="Podaj specjalizację" required>
         </div>
-        <button class="btn btn-success">Dodaj użytkownika</button>
+        <button type="submit" class="btn btn-success">Dodaj użytkownika</button>
       </form>
     </div>
   </div>
@@ -66,6 +67,37 @@
         </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Formularz edycji użytkownika -->
+  <div *ngIf="updatedUser.id" class="card mt-4">
+    <div class="card-header">Edytuj użytkownika</div>
+    <div class="card-body">
+      <form (submit)="updateUser()">
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label>Username</label>
+            <input type="text" class="form-control" [(ngModel)]="updatedUser.username" name="username" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label>Email</label>
+            <input type="email" class="form-control" [(ngModel)]="updatedUser.email" name="email" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label>Rola</label>
+            <select class="form-control" [(ngModel)]="updatedUser.role" name="role" required>
+              <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+            </select>
+          </div>
+        </div>
+        <!-- Pole specjalizacji tylko dla roli DOCTOR -->
+        <div *ngIf="updatedUser.role === 'DOCTOR'" class="form-group">
+          <label>Specjalizacja</label>
+          <input type="text" class="form-control" [(ngModel)]="updatedUser.specialization" name="specialization" placeholder="Podaj specjalizację" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+      </form>
     </div>
   </div>
 </div>
