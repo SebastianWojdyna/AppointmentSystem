@@ -22,13 +22,15 @@ export class DoctorDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.loadDoctorData();
     this.loadAvailableServices();
-    this.loadDoctorAvailability();
   }
 
   // Pobranie danych aktualnie zalogowanego lekarza
   loadDoctorData(): void {
     this.http.get<any>('http://localhost:8080/api/doctors/me').subscribe({
-      next: (data) => this.currentDoctorId = data.id,
+      next: (data) => {
+        this.currentDoctorId = data.id;
+        this.loadDoctorAvailability(); // Ładowanie dostępności po uzyskaniu ID
+      },
       error: (err) => {
         this.errorMessage = 'Nie udało się pobrać danych lekarza.';
         console.error(err);
@@ -49,18 +51,61 @@ export class DoctorDashboardComponent implements OnInit {
 
   // Pobranie dostępności lekarza
   loadDoctorAvailability(): void {
-    if (this.currentDoctorId) { // Sprawdzenie, czy currentDoctorId jest ustawiony
-      this.http.get<any[]>(`http://localhost:8080/api/availability/doctor/${this.currentDoctorId}`).subscribe({
-        next: (data) => this.availability = data,
-        error: (err) => {
-          this.errorMessage = 'Nie udało się pobrać dostępności.';
-          console.error(err);
-        }
-      });
-    } else {
-      console.warn('Doctor ID is not set. Availability cannot be loaded.');
+    if (this.currentDoctorId) {
+      this.http.get<any[]>(`http://localhost:8080/api/availability/doctor/${this.currentDoctorId}`)
+        .subscribe({
+          next: (data) => {
+            this.availability = data.map(avail => ({
+              id: avail.id,
+              service: avail.service || { name: 'Nieznana usługa' },
+              availableTime: this.parseDate(avail.availableTime), // Poprawione parsowanie daty
+              price: avail.price || 0,
+              specialization: avail.specialization || 'Brak specjalizacji'
+            }));
+          },
+          error: (err) => {
+            this.errorMessage = 'Nie udało się pobrać dostępności.';
+            console.error(err);
+          }
+        });
     }
   }
+
+
+  // Funkcja do parsowania daty z formatu "2024,12,7,2,55" do "2024-12-07T02:55:00"
+  parseDate(rawDate: any): string | null {
+    try {
+      if (!rawDate) return null;
+
+      let dateParts: number[];
+
+      // Sprawdzamy, czy rawDate jest tablicą
+      if (Array.isArray(rawDate)) {
+        dateParts = rawDate.map(part => parseInt(part, 10));
+      }
+      // Jeśli to ciąg znaków, dzielimy po przecinkach
+      else if (typeof rawDate === 'string') {
+        dateParts = rawDate.split(',').map(part => parseInt(part, 10));
+      }
+      // Jeśli nie spełnia warunków, zwracamy null
+      else {
+        console.error('Unsupported date format:', rawDate);
+        return null;
+      }
+
+      // Parsowanie daty z części
+      if (dateParts.length >= 5) {
+        const [year, month, day, hours, minutes] = dateParts;
+        const formattedDate = new Date(year, month - 1, day, hours, minutes);
+        return formattedDate.toISOString(); // Format ISO "YYYY-MM-DDTHH:mm:ss"
+      }
+    } catch (error) {
+      console.error('Error parsing date:', rawDate, error);
+    }
+    return null; // W przypadku błędu
+  }
+
+
 
 
   // Dodanie nowej dostępności
@@ -76,23 +121,25 @@ export class DoctorDashboardComponent implements OnInit {
       price: this.price
     };
 
-    this.http.post('http://localhost:8080/api/availability/add', requestBody).subscribe({
-      next: () => {
-        this.successMessage = 'Dostępność została dodana!';
+    this.http.post('http://localhost:8080/api/availability/add', requestBody, { responseType: 'text' }).subscribe({
+      next: (response) => {
+        this.successMessage = response || 'Dostępność została dodana!';
         this.clearForm();
         this.loadDoctorAvailability();
       },
       error: (err) => {
         this.errorMessage = 'Błąd przy dodawaniu dostępności.';
-        console.error(err);
+        console.error('Błąd dodawania dostępności:', err);
       }
     });
   }
 
+  // Czyszczenie formularza
   clearForm(): void {
     this.selectedServiceId = 0;
     this.selectedDateTime = '';
     this.price = 0;
     this.errorMessage = '';
+    this.successMessage = '';
   }
 }
