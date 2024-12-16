@@ -61,7 +61,8 @@ export class DoctorDashboardComponent implements OnInit {
               service: avail.service || { name: 'Nieznana usługa' },
               availableTime: this.parseDate(avail.availableTime),
               price: avail.price || 0,
-              specialization: avail.specialization || 'Brak specjalizacji'
+              specialization: avail.specialization || 'Brak specjalizacji',
+              isBooked: avail.isBooked || false // Flaga rezerwacji
             }));
           },
           error: (err) => {
@@ -97,7 +98,6 @@ export class DoctorDashboardComponent implements OnInit {
 
     this.http.post('http://localhost:8080/api/availability/add', requestBody, { responseType: 'text' }).subscribe({
       next: (response) => {
-        console.log('Response:', response);
         this.successMessage = 'Dostępność została dodana!';
         this.clearForm();
         this.loadDoctorAvailability();

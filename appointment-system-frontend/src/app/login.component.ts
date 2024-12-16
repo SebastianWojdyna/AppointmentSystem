@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
           if (response.role === 'ADMIN') {
             this.router.navigate(['/admin/dashboard']);
           } else if (response.role === 'PATIENT') {
-            this.router.navigate(['/home']);
+            this.router.navigate(['/patient/dashboard']);
           } else if (response.role === 'DOCTOR') {
             this.router.navigate(['/doctor/dashboard']); // W przyszłości możemy dodać widok dla lekarza
           } else {

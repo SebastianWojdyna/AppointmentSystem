@@ -39,6 +39,7 @@
           <th>Data i Godzina</th>
           <th>Cena</th>
           <th>Specjalizacja</th>
+          <th>Status</th>
           <th>Akcje</th>
         </tr>
         </thead>
@@ -50,7 +51,14 @@
           <td>{{ avail?.price || '0' }} zł</td>
           <td>{{ avail?.specialization || 'Brak specjalizacji' }}</td>
           <td>
-            <!-- Poprawiony przycisk usuwania -->
+              <span *ngIf="avail?.isBooked" class="text-success">
+                &#10004; Zarezerwowana
+              </span>
+            <span *ngIf="!avail?.isBooked" class="text-muted">
+                Dostępna
+              </span>
+          </td>
+          <td>
             <button class="btn btn-outline-danger btn-sm" (click)="deleteAvailability(avail.id)">
               Usuń
             </button>

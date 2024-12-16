@@ -17,10 +17,17 @@ public class Availability {
     @JoinColumn(name = "service_id")
     private AppointmentServiceType service;
 
+    @ManyToOne
+    @JoinColumn(name = "patient_id", nullable = true)
+    private User patient; // Powiązanie z pacjentem
+
     private LocalDateTime availableTime;
     private double price;
 
     private String specialization; // Dodane pole na specjalizację
+
+    @Column(nullable = false)
+    private boolean isBooked = false; // Flaga rezerwacji
 
     // Gettery i Settery
     public Long getId() { return id; }
@@ -40,4 +47,10 @@ public class Availability {
 
     public String getSpecialization() { return specialization; }
     public void setSpecialization(String specialization) { this.specialization = specialization; }
+
+    public User getPatient() { return patient; }
+    public void setPatient(User patient) { this.patient = patient; }
+
+    public boolean getIsBooked() { return isBooked; }
+    public void setIsBooked(boolean isBooked) { this.isBooked = isBooked; }
 }
