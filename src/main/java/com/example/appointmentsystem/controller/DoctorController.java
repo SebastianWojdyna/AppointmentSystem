@@ -2,6 +2,7 @@ package com.example.appointmentsystem.controller;
 
 import com.example.appointmentsystem.model.Doctor;
 import com.example.appointmentsystem.service.DoctorService;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,14 +23,19 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getAllDoctors());
     }
 
-    @GetMapping("/doctor/me")
+    @GetMapping("/me")
     @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
     public ResponseEntity<Doctor> getCurrentDoctor(Authentication authentication) {
-        String email = authentication.getName();
+        String username = authentication.getName(); // Pobranie nazwy użytkownika z tokena JWT
 
-        // Znalezienie doktora na podstawie emaila użytkownika
-        Doctor doctor = doctorService.findByUserEmail(email)
+        // Znalezienie doktora na podstawie nazwy użytkownika
+        Doctor doctor = doctorService.findByUserUsername(username)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+        // Jawne wczytanie relacji lazy-loaded
+        Hibernate.initialize(doctor.getUser());
+        Hibernate.initialize(doctor.getServices());
+
         return ResponseEntity.ok(doctor);
     }
 }

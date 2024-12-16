@@ -16,6 +16,7 @@
     </parent>
     <properties>
         <java.version>17</java.version>
+        <jackson.version>2.12.5</jackson.version>
     </properties>
     <dependencies>
         <!-- Zależności dla Spring Boot -->
@@ -55,6 +56,27 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Jackson Hibernate Module -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-hibernate5</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- Jackson JavaTimeModule for LocalDateTime -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- JWT Dependency -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+
         <!-- Zależności dla testów -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -65,13 +87,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <!-- Zależność dla JWT (prostsza wersja 0.9.1) -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.9.1</version>
         </dependency>
     </dependencies>
     <build>

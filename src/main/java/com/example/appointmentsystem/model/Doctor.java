@@ -1,11 +1,13 @@
 package com.example.appointmentsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Ignorowanie proxy Hibernate'a
 public class Doctor {
 
     @Id
@@ -19,6 +21,7 @@ public class Doctor {
     // Poprawiona relacja ManyToOne z User
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password"})
     private User user;
 
     // Relacja ManyToMany z AppointmentServiceType

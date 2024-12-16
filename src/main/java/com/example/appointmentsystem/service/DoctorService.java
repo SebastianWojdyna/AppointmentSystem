@@ -121,4 +121,8 @@ public class DoctorService {
     public Optional<Doctor> findByUserId(Long userId) {
         return doctorRepository.findByUserId(userId);
     }
+
+    public Optional<Doctor> findByUserUsername(String username) {
+        return doctorRepository.findByUser_Username(username);
+    }
 }

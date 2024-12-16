@@ -49,14 +49,19 @@ export class DoctorDashboardComponent implements OnInit {
 
   // Pobranie dostępności lekarza
   loadDoctorAvailability(): void {
-    this.http.get<any[]>('http://localhost:8080/api/availability/doctor/' + this.currentDoctorId).subscribe({
-      next: (data) => this.availability = data,
-      error: (err) => {
-        this.errorMessage = 'Nie udało się pobrać dostępności.';
-        console.error(err);
-      }
-    });
+    if (this.currentDoctorId) { // Sprawdzenie, czy currentDoctorId jest ustawiony
+      this.http.get<any[]>(`http://localhost:8080/api/availability/doctor/${this.currentDoctorId}`).subscribe({
+        next: (data) => this.availability = data,
+        error: (err) => {
+          this.errorMessage = 'Nie udało się pobrać dostępności.';
+          console.error(err);
+        }
+      });
+    } else {
+      console.warn('Doctor ID is not set. Availability cannot be loaded.');
+    }
   }
+
 
   // Dodanie nowej dostępności
   addAvailability(): void {
