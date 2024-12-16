@@ -34,7 +34,7 @@ public class AdminController {
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Page<User>> getUsers(@RequestParam(defaultValue = "0") int page,
-                                               @RequestParam(defaultValue = "20") int size) {
+                                               @RequestParam(defaultValue = "50") int size) {
         Pageable pageable = PageRequest.of(page, size);
         logger.info("Fetching user list, page: {}, size: {}", page, size);
         Page<User> users = userService.getAllUsers(pageable);
