@@ -64,29 +64,24 @@ public class AdminController {
         }
     }
 
-
-    @PatchMapping("/users/{id}/role")
+    @PutMapping("/users/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> updateUserRole(@PathVariable Long id, @RequestBody UpdateUserRoleRequest request) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody Map<String, Object> userRequest) {
         try {
-            logger.info("Updating role for user with ID: {}", id);
+            logger.info("Updating user with ID: {}", id);
 
-            if (request.getRole() == null || request.getRole().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Role cannot be empty"));
-            }
+            User userToUpdate = new User();
+            userToUpdate.setUsername((String) userRequest.get("username"));
+            userToUpdate.setEmail((String) userRequest.get("email"));
+            userToUpdate.setRole(Role.valueOf(((String) userRequest.get("role")).toUpperCase()));
 
-            Role newRole = Role.valueOf(request.getRole().toUpperCase());
-            String specialization = request.getSpecialization();
+            String specialization = (String) userRequest.get("specialization");
 
-            User updatedUser = userService.updateUserRoleWithSpecialization(id, newRole, specialization);
+            User updatedUser = userService.updateUserWithSpecialization(id, userToUpdate, specialization);
 
-            return ResponseEntity.ok(Map.of(
-                    "message", "User role updated successfully",
-                    "user", updatedUser
-            ));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Invalid role provided"));
+            return ResponseEntity.ok(Map.of("message", "User updated successfully", "user", updatedUser));
         } catch (Exception e) {
+            logger.error("Error updating user", e);
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }

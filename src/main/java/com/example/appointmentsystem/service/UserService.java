@@ -30,29 +30,28 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
 
-        // Jeśli użytkownik ma rolę DOCTOR, dodaj profil lekarza
         if (savedUser.getRole() == Role.DOCTOR) {
             Doctor doctor = new Doctor();
             doctor.setUser(savedUser);
             doctor.setName(savedUser.getUsername());
             doctor.setSpecialization(specialization != null && !specialization.trim().isEmpty()
                     ? specialization
-                    : "General"); // Domyślna specjalizacja
+                    : "General");
             doctorRepository.save(doctor);
         }
 
         return savedUser;
     }
 
-
-    // Pobranie użytkownika po ID
-    public User findUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
-    }
-
     // Pobranie użytkownika po emailu
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    // Pobranie użytkownika po ID
+    public User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
     // Pobranie listy użytkowników z paginacją
@@ -61,47 +60,30 @@ public class UserService {
     }
 
     // Aktualizacja użytkownika
-    public User updateUser(Long id, User updatedUser) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setUsername(updatedUser.getUsername());
-        user.setEmail(updatedUser.getEmail());
-        user.setRole(updatedUser.getRole());
-        user.setActive(updatedUser.isActive());
-        return userRepository.save(user);
-    }
-
-    // Usunięcie użytkownika
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-    }
-
-    // Aktualizacja roli użytkownika z obsługą specjalizacji dla roli DOCTOR
-    public User updateUserRoleWithSpecialization(Long id, Role newRole, String specialization) {
+    public User updateUserWithSpecialization(Long id, User updatedUser, String specialization) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
-        user.setRole(newRole);
-        User updatedUser = userRepository.save(user);
+        user.setUsername(updatedUser.getUsername());
+        user.setEmail(updatedUser.getEmail());
+        user.setRole(updatedUser.getRole());
+        User savedUser = userRepository.save(user);
 
-        // Obsługa dodatkowego profilu dla lekarza
-        if (newRole == Role.DOCTOR) {
-            // Znalezienie lub utworzenie profilu lekarza
-            Doctor doctor = doctorRepository.findByUserId(updatedUser.getId())
+        if (updatedUser.getRole() == Role.DOCTOR) {
+            Doctor doctor = doctorRepository.findByUserId(savedUser.getId())
                     .orElseGet(() -> {
                         Doctor newDoctor = new Doctor();
-                        newDoctor.setUser(updatedUser);
+                        newDoctor.setUser(savedUser);
                         return newDoctor;
                     });
 
-            // Ustawienie specjalizacji
             doctor.setSpecialization(specialization != null && !specialization.trim().isEmpty()
                     ? specialization
                     : "General");
-            doctor.setName(updatedUser.getUsername());
+            doctor.setName(savedUser.getUsername());
             doctorRepository.save(doctor);
         }
 
-        return updatedUser;
+        return savedUser;
     }
 }
