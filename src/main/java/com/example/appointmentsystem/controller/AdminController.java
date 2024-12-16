@@ -1,5 +1,6 @@
 package com.example.appointmentsystem.controller;
 
+import com.example.appointmentsystem.dto.UpdateUserRoleRequest;
 import com.example.appointmentsystem.model.Role;
 import com.example.appointmentsystem.model.User;
 import com.example.appointmentsystem.service.UserService;
@@ -42,57 +43,51 @@ public class AdminController {
 
     @PostMapping("/users")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> addUser(@RequestBody User user) {
-        logger.info("Adding new user: {}", user.getEmail());
-        User savedUser = userService.registerUser(user);
-        return ResponseEntity.ok(Map.of("message", "User added successfully", "user", savedUser));
+    public ResponseEntity<?> addUser(@RequestBody Map<String, Object> userRequest) {
+        try {
+            logger.info("Adding new user: {}", userRequest.get("email"));
+
+            User user = new User();
+            user.setUsername((String) userRequest.get("username"));
+            user.setEmail((String) userRequest.get("email"));
+            user.setPassword((String) userRequest.get("password"));
+            user.setRole(Role.valueOf(((String) userRequest.get("role")).toUpperCase()));
+
+            String specialization = (String) userRequest.get("specialization");
+
+            User savedUser = userService.registerUser(user, specialization);
+
+            return ResponseEntity.ok(Map.of("message", "User added successfully", "user", savedUser));
+        } catch (Exception e) {
+            logger.error("Error adding user", e);
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
     }
 
-    @PutMapping("/users/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        logger.info("Updating user with ID: {}", id);
-        User user = userService.updateUser(id, updatedUser);
-        return ResponseEntity.ok(Map.of("message", "User updated successfully", "user", user));
-    }
 
-    @DeleteMapping("/users/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        logger.info("Deleting user with ID: {}", id);
-        userService.deleteUser(id);
-        return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
-    }
-
-    /**
-     * Aktualizacja roli użytkownika.
-     */
     @PatchMapping("/users/{id}/role")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> updateUserRole(@PathVariable Long id, @RequestBody Map<String, String> roleRequest) {
+    public ResponseEntity<?> updateUserRole(@PathVariable Long id, @RequestBody UpdateUserRoleRequest request) {
         try {
             logger.info("Updating role for user with ID: {}", id);
 
-            String roleString = roleRequest.get("role");
-            if (roleString == null || roleString.isEmpty()) {
-                logger.warn("No role provided in request");
+            if (request.getRole() == null || request.getRole().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Role cannot be empty"));
             }
 
-            Role newRole = Role.valueOf(roleString.toUpperCase());
-            User updatedUser = userService.updateUserRole(id, newRole);
+            Role newRole = Role.valueOf(request.getRole().toUpperCase());
+            String specialization = request.getSpecialization();
 
-            logger.info("Role updated successfully for user: {}, new role: {}", updatedUser.getUsername(), newRole);
+            User updatedUser = userService.updateUserRoleWithSpecialization(id, newRole, specialization);
+
             return ResponseEntity.ok(Map.of(
                     "message", "User role updated successfully",
                     "user", updatedUser
             ));
         } catch (IllegalArgumentException e) {
-            logger.error("Invalid role provided: {}", roleRequest.get("role"), e);
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid role provided"));
         } catch (Exception e) {
-            logger.error("Error updating role for user ID: {}", id, e);
-            return ResponseEntity.status(500).body(Map.of("error", "Error updating role", "details", e.getMessage()));
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 }

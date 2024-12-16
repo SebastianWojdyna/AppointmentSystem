@@ -1,9 +1,57 @@
 <div class="container mt-4">
-  <h1>Panel Lekarza</h1>
-  <p>Możesz tutaj przeglądać swoje wizyty i zarządzać pacjentami.</p>
-  <ul class="list-group">
-    <li class="list-group-item">
-      <a routerLink="/doctor/appointments">Moje wizyty</a>
-    </li>
-  </ul>
+  <h1 class="mb-4">Panel Lekarza</h1>
+
+  <!-- Sekcja dodawania dostępności -->
+  <div class="card mb-4">
+    <div class="card-header">Dodaj Dostępność</div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="serviceSelect">Wybierz typ wizyty</label>
+          <select class="form-control" id="serviceSelect" [(ngModel)]="selectedServiceId">
+            <option *ngFor="let service of availableServices" [value]="service.id">
+              {{ service.name }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="dateTime">Data i godzina</label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            id="dateTime"
+            [(ngModel)]="selectedDateTime"
+          />
+        </div>
+      </div>
+      <button class="btn btn-primary" (click)="addAvailability()">Dodaj Dostępność</button>
+    </div>
+  </div>
+
+  <!-- Lista dostępności lekarza -->
+  <div class="card">
+    <div class="card-header">Twoja Dostępność</div>
+    <div class="card-body">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usługa</th>
+          <th>Data i Godzina</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let availability of availability">
+          <td>{{ availability.id }}</td>
+          <td>{{ availability.service.name }}</td>
+          <td>{{ availability.appointmentTime | date: 'yyyy-MM-dd HH:mm' }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Komunikaty -->
+  <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
 </div>

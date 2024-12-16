@@ -11,8 +11,8 @@ export class AdminDashboardComponent implements OnInit {
   roles: string[] = ['ADMIN', 'DOCTOR', 'RECEPTIONIST', 'PATIENT']; // Możliwe role
   successMessage: string = ''; // Wiadomość o sukcesie
   errorMessage: string = ''; // Wiadomość o błędzie
-  newUser: any = { username: '', email: '', password: '', role: '' }; // Nowy użytkownik
-  updatedUser: any = { id: null, username: '', email: '', role: '' }; // Użytkownik do edycji
+  newUser: any = { username: '', email: '', password: '', role: '', specialization: '' }; // Nowy użytkownik
+  updatedUser: any = { id: null, username: '', email: '', role: '', specialization: '' }; // Użytkownik do edycji
 
   constructor(private http: HttpClient) {}
 
@@ -31,7 +31,7 @@ export class AdminDashboardComponent implements OnInit {
     this.clearMessages();
     this.http.get<any>('http://localhost:8080/api/admin/users').subscribe({
       next: (response) => {
-        this.users = response.content || []; // Wczytaj użytkowników
+        this.users = response.content || [];
       },
       error: (err) => {
         console.error('Błąd ładowania użytkowników:', err);
@@ -47,10 +47,17 @@ export class AdminDashboardComponent implements OnInit {
       this.errorMessage = 'Hasło jest wymagane!';
       return;
     }
-    this.http.post('http://localhost:8080/api/admin/users', this.newUser).subscribe({
+
+    // Usuń specjalizację, jeśli rola nie jest DOCTOR
+    const userToAdd = { ...this.newUser };
+    if (userToAdd.role !== 'DOCTOR') {
+      delete userToAdd.specialization;
+    }
+
+    this.http.post('http://localhost:8080/api/admin/users', userToAdd).subscribe({
       next: () => {
         this.successMessage = 'Użytkownik dodany pomyślnie!';
-        this.newUser = { username: '', email: '', password: '', role: '' };
+        this.newUser = { username: '', email: '', password: '', role: '', specialization: '' };
         this.loadUsers();
       },
       error: (err) => {
@@ -63,7 +70,14 @@ export class AdminDashboardComponent implements OnInit {
   // Zmiana roli użytkownika
   changeUserRole(userId: number, newRole: string): void {
     this.clearMessages();
-    this.http.patch(`http://localhost:8080/api/admin/users/${userId}/role`, { role: newRole }).subscribe({
+
+    const requestBody: any = { role: newRole };
+
+    if (newRole === 'DOCTOR') {
+      requestBody.specialization = this.updatedUser.specialization || 'Not Specified';
+    }
+
+    this.http.patch(`http://localhost:8080/api/admin/users/${userId}/role`, requestBody).subscribe({
       next: () => {
         this.successMessage = `Rola użytkownika została zmieniona na ${newRole}.`;
         this.loadUsers();
@@ -77,16 +91,28 @@ export class AdminDashboardComponent implements OnInit {
 
   // Ustawienie użytkownika do edycji
   setUpdatedUser(user: any): void {
-    this.updatedUser = { id: user.id, username: user.username, email: user.email, role: user.role };
+    this.updatedUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      specialization: user.specialization || ''
+    };
   }
 
   // Aktualizacja użytkownika
   updateUser(): void {
     this.clearMessages();
-    this.http.put(`http://localhost:8080/api/admin/users/${this.updatedUser.id}`, this.updatedUser).subscribe({
+
+    const userToUpdate = { ...this.updatedUser };
+    if (userToUpdate.role !== 'DOCTOR') {
+      delete userToUpdate.specialization;
+    }
+
+    this.http.put(`http://localhost:8080/api/admin/users/${userToUpdate.id}`, userToUpdate).subscribe({
       next: () => {
         this.successMessage = 'Dane użytkownika zostały zaktualizowane.';
-        this.updatedUser = { id: null, username: '', email: '', role: '' };
+        this.updatedUser = { id: null, username: '', email: '', role: '', specialization: '' };
         this.loadUsers();
       },
       error: (err) => {

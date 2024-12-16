@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ServiceService {
@@ -19,5 +20,9 @@ public class ServiceService {
 
     public List<AppointmentServiceType> findAll() {
         return serviceRepository.findAll();
+    }
+
+    public Optional<AppointmentServiceType> findById(Long id) {
+        return serviceRepository.findById(id);
     }
 }

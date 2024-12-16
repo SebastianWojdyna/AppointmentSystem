@@ -9,4 +9,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     Optional<Appointment> findByOrderId(String orderId);
     List<Appointment> findByUserId(Long userId);
     Optional<Appointment> findByIdAndUserId(Long id, Long userId);  // Metoda do wyszukiwania wizyt po ID i ID użytkownika
+    List<Appointment> findByDoctorId(Long doctorId);
+    List<Appointment> findByDoctorIdAndAvailableTrue(Long doctorId);
 }

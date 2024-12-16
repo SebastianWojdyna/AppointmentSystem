@@ -4,6 +4,8 @@ import com.example.appointmentsystem.model.Doctor;
 import com.example.appointmentsystem.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,13 +19,17 @@ public class DoctorController {
 
     @GetMapping
     public ResponseEntity<List<Doctor>> getAllDoctors() {
-        List<Doctor> doctors = doctorService.getAllDoctors();
-        return ResponseEntity.ok(doctors);
+        return ResponseEntity.ok(doctorService.getAllDoctors());
     }
 
-    @GetMapping("/service/{serviceId}")
-    public ResponseEntity<List<Doctor>> getDoctorsByService(@PathVariable Long serviceId) {
-        List<Doctor> doctors = doctorService.getDoctorsByService(serviceId);
-        return ResponseEntity.ok(doctors);
+    @GetMapping("/doctor/me")
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
+    public ResponseEntity<Doctor> getCurrentDoctor(Authentication authentication) {
+        String email = authentication.getName();
+
+        // Znalezienie doktora na podstawie emaila użytkownika
+        Doctor doctor = doctorService.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        return ResponseEntity.ok(doctor);
     }
 }

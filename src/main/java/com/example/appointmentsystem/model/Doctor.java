@@ -1,5 +1,7 @@
 package com.example.appointmentsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -8,38 +10,41 @@ public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
 
-    @ManyToMany
+    private String name;
+    private String specialization;
+
+    // Relacja ManyToOne z User
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    // Relacja ManyToMany z AppointmentServiceType
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "doctor_service",
             joinColumns = @JoinColumn(name = "doctor_id"),
             inverseJoinColumns = @JoinColumn(name = "service_id")
     )
+    @JsonManagedReference
     private List<AppointmentServiceType> services;
 
+    // Konstruktor bezargumentowy
+    public Doctor() {}
+
     // Gettery i settery
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getName() {
-        return name;
-    }
+    public String getSpecialization() { return specialization; }
+    public void setSpecialization(String specialization) { this.specialization = specialization; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
-    public List<AppointmentServiceType> getServices() {
-        return services;
-    }
-
-    public void setServices(List<AppointmentServiceType> services) {
-        this.services = services;
-    }
+    public List<AppointmentServiceType> getServices() { return services; }
+    public void setServices(List<AppointmentServiceType> services) { this.services = services; }
 }

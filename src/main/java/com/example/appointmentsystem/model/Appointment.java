@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "appointment")
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,6 +13,7 @@ public class Appointment {
     private String patientName;
     private LocalDateTime appointmentTime;
     private boolean paid;
+    private boolean available;
     private String orderId;
 
     @ManyToOne
@@ -26,68 +28,31 @@ public class Appointment {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Gettery i settery
-    public Long getId() {
-        return id;
-    }
+    // Gettery i Settery
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getPatientName() { return patientName; }
+    public void setPatientName(String patientName) { this.patientName = patientName; }
 
-    public String getPatientName() {
-        return patientName;
-    }
+    public LocalDateTime getAppointmentTime() { return appointmentTime; }
+    public void setAppointmentTime(LocalDateTime appointmentTime) { this.appointmentTime = appointmentTime; }
 
-    public void setPatientName(String patientName) {
-        this.patientName = patientName;
-    }
+    public boolean isPaid() { return paid; }
+    public void setPaid(boolean paid) { this.paid = paid; }
 
-    public LocalDateTime getAppointmentTime() {
-        return appointmentTime;
-    }
+    public boolean isAvailable() { return available; }
+    public void setAvailable(boolean available) { this.available = available; }
 
-    public void setAppointmentTime(LocalDateTime appointmentTime) {
-        this.appointmentTime = appointmentTime;
-    }
+    public String getOrderId() { return orderId; }
+    public void setOrderId(String orderId) { this.orderId = orderId; }
 
-    public boolean isPaid() {
-        return paid;
-    }
+    public Doctor getDoctor() { return doctor; }
+    public void setDoctor(Doctor doctor) { this.doctor = doctor; }
 
-    public void setPaid(boolean paid) {
-        this.paid = paid;
-    }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public Doctor getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
-    }
-
-    public AppointmentServiceType getService() {
-        return service;
-    }
-
-    public void setService(AppointmentServiceType service) {
-        this.service = service;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public AppointmentServiceType getService() { return service; }
+    public void setService(AppointmentServiceType service) { this.service = service; }
 }
