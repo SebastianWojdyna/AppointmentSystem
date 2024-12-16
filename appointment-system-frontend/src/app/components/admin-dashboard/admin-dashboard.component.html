@@ -31,7 +31,8 @@
           <label>Specjalizacja</label>
           <input type="text" class="form-control" [(ngModel)]="newUser.specialization" name="specialization" placeholder="Podaj specjalizację" required>
         </div>
-        <button type="submit" class="btn btn-success">Dodaj użytkownika</button>
+        <!-- Zmieniony przycisk Dodaj użytkownika -->
+        <button type="submit" class="btn btn-outline-success">Dodaj użytkownika</button>
       </form>
     </div>
   </div>
@@ -40,8 +41,8 @@
   <div class="card">
     <div class="card-header">Lista użytkowników</div>
     <div class="card-body">
-      <table class="table table-striped">
-        <thead>
+      <table class="table table-hover table-bordered text-center">
+        <thead class="thead-light">
         <tr>
           <th>ID</th>
           <th>Username</th>
@@ -51,18 +52,19 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let user of users">
+        <tr *ngFor="let user of users" class="table-light">
           <td>{{ user.id }}</td>
           <td>{{ user.username }}</td>
           <td>{{ user.email }}</td>
           <td>
-            <select [(ngModel)]="user.role" (change)="changeUserRole(user.id, user.role)">
+            <select [(ngModel)]="user.role" (change)="changeUserRole(user.id, user.role)" class="form-control form-control-sm">
               <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
             </select>
           </td>
           <td>
-            <button class="btn btn-danger" (click)="deleteUser(user.id)">Usuń</button>
-            <button class="btn btn-warning" (click)="setUpdatedUser(user)">Edytuj</button>
+            <!-- Nowoczesne przyciski -->
+            <button class="btn btn-outline-danger btn-sm" (click)="deleteUser(user.id)">Usuń</button>
+            <button class="btn btn-outline-warning btn-sm ml-2" (click)="setUpdatedUser(user)">Edytuj</button>
           </td>
         </tr>
         </tbody>
@@ -96,7 +98,7 @@
           <label>Specjalizacja</label>
           <input type="text" class="form-control" [(ngModel)]="updatedUser.specialization" name="specialization" placeholder="Podaj specjalizację" required>
         </div>
-        <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+        <button type="submit" class="btn btn-outline-primary">Zapisz zmiany</button>
       </form>
     </div>
   </div>
