@@ -117,4 +117,8 @@ public class DoctorService {
         }
         return Optional.empty();
     }
+
+    public Optional<Doctor> findByUserId(Long userId) {
+        return doctorRepository.findByUserId(userId);
+    }
 }
