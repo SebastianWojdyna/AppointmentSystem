@@ -5,3 +5,11 @@ h1 {
 .card {
   margin-top: 20px;
 }
+.btn {
+  transition: all 0.3s ease;
+}
+
+.btn-outline-success:hover {
+  background-color: #28a745;
+  color: white;
+}

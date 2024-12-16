@@ -1,12 +1,12 @@
 <div class="container mt-4">
-  <h1 class="mb-4">Panel Lekarza</h1>
+  <h1 class="mb-4 text-center">Panel Lekarza</h1>
 
-  <!-- Sekcja dodawania dostępności -->
+  <!-- Formularz dodawania dostępności -->
   <div class="card mb-4">
-    <div class="card-header">Dodaj Dostępność</div>
+    <div class="card-header font-weight-bold">Dodaj Dostępność</div>
     <div class="card-body">
       <div class="form-row">
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-4">
           <label for="serviceSelect">Wybierz typ wizyty</label>
           <select class="form-control" id="serviceSelect" [(ngModel)]="selectedServiceId">
             <option *ngFor="let service of availableServices" [value]="service.id">
@@ -14,37 +14,40 @@
             </option>
           </select>
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-4">
           <label for="dateTime">Data i godzina</label>
-          <input
-            type="datetime-local"
-            class="form-control"
-            id="dateTime"
-            [(ngModel)]="selectedDateTime"
-          />
+          <input type="datetime-local" class="form-control" id="dateTime" [(ngModel)]="selectedDateTime" />
+        </div>
+        <div class="form-group col-md-4">
+          <label for="price">Cena</label>
+          <input type="number" class="form-control" id="price" [(ngModel)]="price" placeholder="Podaj cenę" />
         </div>
       </div>
-      <button class="btn btn-primary" (click)="addAvailability()">Dodaj Dostępność</button>
+      <button class="btn btn-outline-success btn-block" (click)="addAvailability()">Dodaj Dostępność</button>
     </div>
   </div>
 
-  <!-- Lista dostępności lekarza -->
+  <!-- Tabela dostępności -->
   <div class="card">
-    <div class="card-header">Twoja Dostępność</div>
+    <div class="card-header font-weight-bold">Twoja Dostępność</div>
     <div class="card-body">
-      <table class="table table-striped">
-        <thead>
+      <table class="table table-striped table-bordered">
+        <thead class="thead-light">
         <tr>
           <th>ID</th>
           <th>Usługa</th>
           <th>Data i Godzina</th>
+          <th>Cena</th>
+          <th>Specjalizacja</th>
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let availability of availability">
-          <td>{{ availability.id }}</td>
-          <td>{{ availability.service.name }}</td>
-          <td>{{ availability.appointmentTime | date: 'yyyy-MM-dd HH:mm' }}</td>
+        <tr *ngFor="let avail of availability">
+          <td>{{ avail.id }}</td>
+          <td>{{ avail.service.name }}</td>
+          <td>{{ avail.availableTime | date: 'yyyy-MM-dd HH:mm' }}</td>
+          <td>{{ avail.price }} zł</td>
+          <td>{{ avail.specialization }}</td>
         </tr>
         </tbody>
       </table>

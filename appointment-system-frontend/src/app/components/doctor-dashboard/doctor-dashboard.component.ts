@@ -7,10 +7,11 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./doctor-dashboard.component.css']
 })
 export class DoctorDashboardComponent implements OnInit {
-  availableServices: any[] = []; // Typy wizyt dostępne w systemie
-  availability: any[] = [];      // Lista dostępności lekarza
+  availableServices: any[] = []; // Usługi dostępne w systemie
+  availability: any[] = []; // Lista dostępności lekarza
   selectedServiceId: number = 0;
   selectedDateTime: string = '';
+  price: number = 0; // Pole dla ceny
   currentDoctorId: number | null = null;
 
   successMessage: string = '';
@@ -24,12 +25,10 @@ export class DoctorDashboardComponent implements OnInit {
     this.loadDoctorAvailability();
   }
 
-  // Pobranie ID aktualnie zalogowanego lekarza
+  // Pobranie danych aktualnie zalogowanego lekarza
   loadDoctorData(): void {
     this.http.get<any>('http://localhost:8080/api/doctors/me').subscribe({
-      next: (data) => {
-        this.currentDoctorId = data.id;
-      },
+      next: (data) => this.currentDoctorId = data.id,
       error: (err) => {
         this.errorMessage = 'Nie udało się pobrać danych lekarza.';
         console.error(err);
@@ -37,45 +36,58 @@ export class DoctorDashboardComponent implements OnInit {
     });
   }
 
-  // Pobranie usług medycznych z backendu
+  // Pobranie listy dostępnych usług
   loadAvailableServices(): void {
     this.http.get<any[]>('http://localhost:8080/api/services').subscribe({
       next: (data) => this.availableServices = data,
-      error: (err) => this.errorMessage = 'Nie udało się pobrać usług.'
+      error: (err) => {
+        this.errorMessage = 'Nie udało się pobrać usług.';
+        console.error(err);
+      }
     });
   }
 
   // Pobranie dostępności lekarza
   loadDoctorAvailability(): void {
-    this.http.get<any[]>('http://localhost:8080/api/appointments/doctor/me').subscribe({
+    this.http.get<any[]>('http://localhost:8080/api/availability/doctor/' + this.currentDoctorId).subscribe({
       next: (data) => this.availability = data,
-      error: (err) => this.errorMessage = 'Nie udało się pobrać dostępności.'
+      error: (err) => {
+        this.errorMessage = 'Nie udało się pobrać dostępności.';
+        console.error(err);
+      }
     });
   }
 
   // Dodanie nowej dostępności
   addAvailability(): void {
-    if (!this.currentDoctorId) {
-      this.errorMessage = 'Nie można dodać dostępności – brak danych lekarza.';
+    if (!this.selectedServiceId || !this.selectedDateTime || this.price <= 0) {
+      this.errorMessage = 'Wszystkie pola są wymagane.';
       return;
     }
 
     const requestBody = {
-      appointmentTime: this.selectedDateTime,
-      service: { id: this.selectedServiceId },
-      doctor: { id: this.currentDoctorId }
+      serviceId: this.selectedServiceId,
+      availableTimes: [this.selectedDateTime],
+      price: this.price
     };
 
-    this.http.post('http://localhost:8080/api/appointments/availability', requestBody).subscribe({
+    this.http.post('http://localhost:8080/api/availability/add', requestBody).subscribe({
       next: () => {
         this.successMessage = 'Dostępność została dodana!';
+        this.clearForm();
         this.loadDoctorAvailability();
-        this.errorMessage = '';
       },
       error: (err) => {
         this.errorMessage = 'Błąd przy dodawaniu dostępności.';
         console.error(err);
       }
     });
+  }
+
+  clearForm(): void {
+    this.selectedServiceId = 0;
+    this.selectedDateTime = '';
+    this.price = 0;
+    this.errorMessage = '';
   }
 }
