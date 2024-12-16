@@ -109,7 +109,20 @@ export class DoctorDashboardComponent implements OnInit {
     });
   }
 
+  deleteAvailability(availabilityId: number): void {
+    if (!availabilityId) return;
 
+    this.http.delete(`http://localhost:8080/api/availability/delete/${availabilityId}`).subscribe({
+      next: () => {
+        this.successMessage = 'Dostępność została usunięta!';
+        this.loadDoctorAvailability(); // Odśwież listę dostępności
+      },
+      error: (err) => {
+        this.errorMessage = 'Błąd przy usuwaniu dostępności.';
+        console.error(err);
+      }
+    });
+  }
 
   addNewService(): void {
     if (!this.newServiceName || this.newServicePrice === null || this.newServicePrice <= 0) {

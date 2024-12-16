@@ -5,6 +5,7 @@ import com.example.appointmentsystem.model.Availability;
 import com.example.appointmentsystem.model.Doctor;
 import com.example.appointmentsystem.model.AppointmentServiceType;
 import com.example.appointmentsystem.model.User;
+import com.example.appointmentsystem.repository.AvailabilityRepository;
 import com.example.appointmentsystem.service.AvailabilityService;
 import com.example.appointmentsystem.service.DoctorService;
 import com.example.appointmentsystem.service.ServiceService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -26,6 +28,8 @@ public class AvailabilityController {
     @Autowired
     private AvailabilityService availabilityService;
 
+    private final AvailabilityRepository availabilityRepository;
+
     @Autowired
     private DoctorService doctorService;
 
@@ -34,6 +38,11 @@ public class AvailabilityController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    public AvailabilityController(AvailabilityRepository availabilityRepository) {
+        this.availabilityRepository = availabilityRepository;
+    }
 
     // Dodanie dostępności przez lekarza
     @PostMapping("/add")
@@ -60,6 +69,17 @@ public class AvailabilityController {
         return ResponseEntity.ok("Availability added successfully");
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteAvailability(@PathVariable Long id) {
+        if (!availabilityRepository.existsById(id)) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Dostępność nie istnieje"));
+        }
+
+        availabilityRepository.deleteById(id);
+        return ResponseEntity.ok(Collections.singletonMap("message", "Dostępność została usunięta"));
+    }
+
+
     // Pobranie dostępności dla lekarza
     @GetMapping("/doctor/{doctorId}")
     public ResponseEntity<List<Availability>> getDoctorAvailability(@PathVariable Long doctorId) {
@@ -71,4 +91,5 @@ public class AvailabilityController {
     public ResponseEntity<List<Availability>> getServiceAvailability(@PathVariable Long serviceId) {
         return ResponseEntity.ok(availabilityService.getServiceAvailability(serviceId));
     }
+
 }

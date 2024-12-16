@@ -39,6 +39,7 @@
           <th>Data i Godzina</th>
           <th>Cena</th>
           <th>Specjalizacja</th>
+          <th>Akcje</th>
         </tr>
         </thead>
         <tbody>
@@ -48,6 +49,12 @@
           <td>{{ avail?.availableTime ? (avail.availableTime | date: 'yyyy-MM-dd HH:mm') : 'Nieznana data' }}</td>
           <td>{{ avail?.price || '0' }} zł</td>
           <td>{{ avail?.specialization || 'Brak specjalizacji' }}</td>
+          <td>
+            <!-- Poprawiony przycisk usuwania -->
+            <button class="btn btn-outline-danger btn-sm" (click)="deleteAvailability(avail.id)">
+              Usuń
+            </button>
+          </td>
         </tr>
         </tbody>
       </table>
@@ -60,35 +67,34 @@
   <!-- Komunikaty -->
   <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
   <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
-</div>
 
-<!-- Formularz dodawania nowego typu usługi -->
-<div class="card mb-4">
-  <div class="card-header font-weight-bold">Dodaj Nowy Typ Usługi</div>
-  <div class="card-body">
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        <label for="newServiceName">Nazwa usługi</label>
-        <input
-          type="text"
-          class="form-control"
-          id="newServiceName"
-          [(ngModel)]="newServiceName"
-          placeholder="Wprowadź nazwę usługi"
-        />
+  <!-- Formularz dodawania nowego typu usługi -->
+  <div class="card mb-4">
+    <div class="card-header font-weight-bold">Dodaj Nowy Typ Usługi</div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="newServiceName">Nazwa usługi</label>
+          <input
+            type="text"
+            class="form-control"
+            id="newServiceName"
+            [(ngModel)]="newServiceName"
+            placeholder="Wprowadź nazwę usługi"
+          />
+        </div>
+        <div class="form-group col-md-6">
+          <label for="newServicePrice">Cena usługi</label>
+          <input
+            type="number"
+            class="form-control"
+            id="newServicePrice"
+            [(ngModel)]="newServicePrice"
+            placeholder="Wprowadź cenę usługi"
+          />
+        </div>
       </div>
-      <div class="form-group col-md-6">
-        <label for="newServicePrice">Cena usługi</label>
-        <input
-          type="number"
-          class="form-control"
-          id="newServicePrice"
-          [(ngModel)]="newServicePrice"
-          placeholder="Wprowadź cenę usługi"
-        />
-      </div>
+      <button class="btn btn-outline-primary btn-block" (click)="addNewService()">Dodaj Typ Usługi</button>
     </div>
-    <button class="btn btn-outline-primary btn-block" (click)="addNewService()">Dodaj Typ Usługi</button>
   </div>
 </div>
-
