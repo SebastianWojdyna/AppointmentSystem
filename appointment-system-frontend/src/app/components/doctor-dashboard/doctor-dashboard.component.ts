@@ -95,8 +95,9 @@ export class DoctorDashboardComponent implements OnInit {
       price: this.price
     };
 
-    this.http.post('http://localhost:8080/api/availability/add', requestBody).subscribe({
-      next: () => {
+    this.http.post('http://localhost:8080/api/availability/add', requestBody, { responseType: 'text' }).subscribe({
+      next: (response) => {
+        console.log('Response:', response);
         this.successMessage = 'Dostępność została dodana!';
         this.clearForm();
         this.loadDoctorAvailability();
@@ -107,6 +108,8 @@ export class DoctorDashboardComponent implements OnInit {
       }
     });
   }
+
+
 
   addNewService(): void {
     if (!this.newServiceName || this.newServicePrice === null || this.newServicePrice <= 0) {

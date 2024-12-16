@@ -8,7 +8,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/services")
@@ -22,19 +24,27 @@ public class ServiceController {
         this.serviceRepository = serviceRepository;
     }
 
+    // Endpoint pobierający wszystkie usługi
     @GetMapping
     public ResponseEntity<List<AppointmentServiceType>> getAllServices() {
         List<AppointmentServiceType> services = serviceRepository.findAll();
         return ResponseEntity.ok(services);
     }
 
+    // Endpoint dodający nową usługę
     @PostMapping("/add")
-    public ResponseEntity<?> addNewService(@Valid @RequestBody AppointmentServiceType newService) {
+    public ResponseEntity<Map<String, Object>> addNewService(@Valid @RequestBody AppointmentServiceType newService) {
+        Map<String, Object> response = new HashMap<>();
+
         if (newService.getPrice() <= 0) {
-            return ResponseEntity.badRequest().body("Cena usługi musi być większa od zera.");
+            response.put("error", "Cena usługi musi być większa od zera.");
+            return ResponseEntity.badRequest().body(response);
         }
 
         AppointmentServiceType savedService = serviceRepository.save(newService);
-        return ResponseEntity.ok(savedService);
+
+        response.put("message", "Service added successfully");
+        response.put("service", savedService);
+        return ResponseEntity.ok(response);
     }
 }
