@@ -7,12 +7,15 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./doctor-dashboard.component.css']
 })
 export class DoctorDashboardComponent implements OnInit {
-  availableServices: any[] = []; // Usługi dostępne w systemie
-  availability: any[] = []; // Lista dostępności lekarza
+  availableServices: any[] = [];
+  availability: any[] = [];
   selectedServiceId: number = 0;
   selectedDateTime: string = '';
-  price: number = 0; // Pole dla ceny
+  price: number = 0;
   currentDoctorId: number | null = null;
+
+  newServiceName: string = '';
+  newServicePrice: number | null = null;
 
   successMessage: string = '';
   errorMessage: string = '';
@@ -24,12 +27,11 @@ export class DoctorDashboardComponent implements OnInit {
     this.loadAvailableServices();
   }
 
-  // Pobranie danych aktualnie zalogowanego lekarza
   loadDoctorData(): void {
     this.http.get<any>('http://localhost:8080/api/doctors/me').subscribe({
       next: (data) => {
         this.currentDoctorId = data.id;
-        this.loadDoctorAvailability(); // Ładowanie dostępności po uzyskaniu ID
+        this.loadDoctorAvailability();
       },
       error: (err) => {
         this.errorMessage = 'Nie udało się pobrać danych lekarza.';
@@ -38,10 +40,9 @@ export class DoctorDashboardComponent implements OnInit {
     });
   }
 
-  // Pobranie listy dostępnych usług
   loadAvailableServices(): void {
     this.http.get<any[]>('http://localhost:8080/api/services').subscribe({
-      next: (data) => this.availableServices = data,
+      next: (data) => (this.availableServices = data),
       error: (err) => {
         this.errorMessage = 'Nie udało się pobrać usług.';
         console.error(err);
@@ -49,16 +50,16 @@ export class DoctorDashboardComponent implements OnInit {
     });
   }
 
-  // Pobranie dostępności lekarza
   loadDoctorAvailability(): void {
     if (this.currentDoctorId) {
-      this.http.get<any[]>(`http://localhost:8080/api/availability/doctor/${this.currentDoctorId}`)
+      this.http
+        .get<any[]>(`http://localhost:8080/api/availability/doctor/${this.currentDoctorId}`)
         .subscribe({
           next: (data) => {
             this.availability = data.map(avail => ({
               id: avail.id,
               service: avail.service || { name: 'Nieznana usługa' },
-              availableTime: this.parseDate(avail.availableTime), // Poprawione parsowanie daty
+              availableTime: this.parseDate(avail.availableTime),
               price: avail.price || 0,
               specialization: avail.specialization || 'Brak specjalizacji'
             }));
@@ -71,44 +72,17 @@ export class DoctorDashboardComponent implements OnInit {
     }
   }
 
-
-  // Funkcja do parsowania daty z formatu "2024,12,7,2,55" do "2024-12-07T02:55:00"
   parseDate(rawDate: any): string | null {
     try {
       if (!rawDate) return null;
-
-      let dateParts: number[];
-
-      // Sprawdzamy, czy rawDate jest tablicą
-      if (Array.isArray(rawDate)) {
-        dateParts = rawDate.map(part => parseInt(part, 10));
-      }
-      // Jeśli to ciąg znaków, dzielimy po przecinkach
-      else if (typeof rawDate === 'string') {
-        dateParts = rawDate.split(',').map(part => parseInt(part, 10));
-      }
-      // Jeśli nie spełnia warunków, zwracamy null
-      else {
-        console.error('Unsupported date format:', rawDate);
-        return null;
-      }
-
-      // Parsowanie daty z części
-      if (dateParts.length >= 5) {
-        const [year, month, day, hours, minutes] = dateParts;
-        const formattedDate = new Date(year, month - 1, day, hours, minutes);
-        return formattedDate.toISOString(); // Format ISO "YYYY-MM-DDTHH:mm:ss"
-      }
+      const [year, month, day, hours, minutes] = rawDate;
+      return new Date(year, month - 1, day, hours, minutes).toISOString();
     } catch (error) {
       console.error('Error parsing date:', rawDate, error);
+      return null;
     }
-    return null; // W przypadku błędu
   }
 
-
-
-
-  // Dodanie nowej dostępności
   addAvailability(): void {
     if (!this.selectedServiceId || !this.selectedDateTime || this.price <= 0) {
       this.errorMessage = 'Wszystkie pola są wymagane.';
@@ -121,25 +95,52 @@ export class DoctorDashboardComponent implements OnInit {
       price: this.price
     };
 
-    this.http.post('http://localhost:8080/api/availability/add', requestBody, { responseType: 'text' }).subscribe({
-      next: (response) => {
-        this.successMessage = response || 'Dostępność została dodana!';
+    this.http.post('http://localhost:8080/api/availability/add', requestBody).subscribe({
+      next: () => {
+        this.successMessage = 'Dostępność została dodana!';
         this.clearForm();
         this.loadDoctorAvailability();
       },
       error: (err) => {
         this.errorMessage = 'Błąd przy dodawaniu dostępności.';
-        console.error('Błąd dodawania dostępności:', err);
+        console.error(err);
       }
     });
   }
 
-  // Czyszczenie formularza
+  addNewService(): void {
+    if (!this.newServiceName || this.newServicePrice === null || this.newServicePrice <= 0) {
+      this.errorMessage = 'Wprowadź poprawną nazwę i cenę usługi.';
+      return;
+    }
+
+    const newService = { name: this.newServiceName.trim(), price: this.newServicePrice };
+
+    this.http.post<any>('http://localhost:8080/api/services/add', newService, {
+      headers: { 'Content-Type': 'application/json' }
+    }).subscribe({
+      next: (data) => {
+        this.successMessage = 'Nowy typ usługi został dodany!';
+        this.loadAvailableServices();
+        this.clearNewServiceForm();
+      },
+      error: (err) => {
+        this.errorMessage = err.error || 'Nie udało się dodać nowego typu usługi.';
+        console.error(err);
+      }
+    });
+  }
+
   clearForm(): void {
     this.selectedServiceId = 0;
     this.selectedDateTime = '';
     this.price = 0;
     this.errorMessage = '';
     this.successMessage = '';
+  }
+
+  clearNewServiceForm(): void {
+    this.newServiceName = '';
+    this.newServicePrice = null;
   }
 }

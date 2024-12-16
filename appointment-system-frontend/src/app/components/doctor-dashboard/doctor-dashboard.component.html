@@ -61,3 +61,34 @@
   <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
   <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
 </div>
+
+<!-- Formularz dodawania nowego typu usługi -->
+<div class="card mb-4">
+  <div class="card-header font-weight-bold">Dodaj Nowy Typ Usługi</div>
+  <div class="card-body">
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="newServiceName">Nazwa usługi</label>
+        <input
+          type="text"
+          class="form-control"
+          id="newServiceName"
+          [(ngModel)]="newServiceName"
+          placeholder="Wprowadź nazwę usługi"
+        />
+      </div>
+      <div class="form-group col-md-6">
+        <label for="newServicePrice">Cena usługi</label>
+        <input
+          type="number"
+          class="form-control"
+          id="newServicePrice"
+          [(ngModel)]="newServicePrice"
+          placeholder="Wprowadź cenę usługi"
+        />
+      </div>
+    </div>
+    <button class="btn btn-outline-primary btn-block" (click)="addNewService()">Dodaj Typ Usługi</button>
+  </div>
+</div>
+

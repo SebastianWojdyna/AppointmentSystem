@@ -1,6 +1,10 @@
 package com.example.appointmentsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Entity
@@ -8,13 +12,18 @@ public class AppointmentServiceType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "Nazwa usługi nie może być pusta.")
     private String name;
+
+    @Positive(message = "Cena usługi musi być większa od zera.")
     private double price;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "services")
     private List<Doctor> doctors;
 
-    // Gettery i settery
+    // Gettery i Settery
     public Long getId() {
         return id;
     }

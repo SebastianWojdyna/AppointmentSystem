@@ -1,5 +1,7 @@
 package com.example.appointmentsystem.config;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -13,7 +15,9 @@ public class JacksonConfig {
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
-        objectMapper.registerModule(new JavaTimeModule()); // Obsługa LocalDateTime
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.setVisibility(objectMapper.getVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY));
         return objectMapper;
     }
 }
