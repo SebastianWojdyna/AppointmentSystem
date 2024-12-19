@@ -60,4 +60,17 @@ public class AvailabilityService {
         return availabilityRepository.findByPatientId(patientId);
     }
 
+    public void cancelAppointment(Long availabilityId, User patient){
+        Availability availability = availabilityRepository.findById(availabilityId)
+                .orElseThrow(() -> new RuntimeException("Availability not found"));
+
+        if (!availability.getIsBooked() || !availability.getPatient().getId().equals(patient.getId())) {
+            throw new RuntimeException("Nie możesz anulować tej rezerwacji.");
+        }
+
+        availability.setIsBooked(false);
+        availability.setPatient(null);
+        availabilityRepository.save(availability);
+    }
+
 }

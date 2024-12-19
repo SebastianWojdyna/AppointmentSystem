@@ -55,6 +55,15 @@
       <td>{{ appt.availableTime | date: 'yyyy-MM-dd HH:mm' }}</td>
       <td>{{ appt.price }} zł</td>
       <td>{{ appt.doctor.name }}</td>
+      <td>
+        <button
+          *ngIf="appt.isBooked"
+          class="btn btn-outline-danger btn-sm"
+          (click)="cancelAppointment(appt.id)"
+        >
+          Usuń
+        </button>
+      </td>
     </tr>
     </tbody>
   </table>

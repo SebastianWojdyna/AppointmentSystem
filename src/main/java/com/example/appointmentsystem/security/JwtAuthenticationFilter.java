@@ -85,9 +85,6 @@ public class JwtAuthenticationFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    /**
-     * Pobiera token JWT z nagłówka Authorization.
-     */
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         logger.info("Received Authorization header: {}", bearerToken);

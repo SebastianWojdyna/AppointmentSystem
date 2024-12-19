@@ -20,30 +20,22 @@ public class DoctorService {
     @Autowired
     private UserRepository userRepository;
 
-    /**
-     * Pobiera wszystkich lekarzy.
-     */
+
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAll();
     }
 
-    /**
-     * Znajduje lekarza po ID.
-     */
+
     public Doctor findDoctorById(Long id) {
         return doctorRepository.findById(id).orElse(null);
     }
 
-    /**
-     * Pobiera lekarzy po ID usługi.
-     */
+
     public List<Doctor> getDoctorsByService(Long serviceId) {
         return doctorRepository.findByServices_Id(serviceId);
     }
 
-    /**
-     * Pobiera unikalne specjalizacje lekarzy.
-     */
+
     public List<String> getAllSpecializations() {
         return doctorRepository.findAll()
                 .stream()
@@ -53,23 +45,17 @@ public class DoctorService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Pobiera lekarzy po specjalizacji.
-     */
+
     public List<Doctor> getDoctorsBySpecialization(String specialization) {
         return doctorRepository.findBySpecialization(specialization);
     }
 
-    /**
-     * Znajduje lekarza na podstawie emaila użytkownika.
-     */
+
     public Optional<Doctor> findByUserEmail(String email) {
         return doctorRepository.findByUser_Email(email);
     }
 
-    /**
-     * Tworzy lub pobiera profil lekarza na podstawie zalogowanego użytkownika.
-     */
+
     public Doctor getOrCreateDoctorProfile(User user) {
         Optional<Doctor> doctorOptional = doctorRepository.findByUserId(user.getId());
 
@@ -86,16 +72,12 @@ public class DoctorService {
         return doctorOptional.get(); // Zwrócenie istniejącego obiektu Doctor
     }
 
-    /**
-     * Zapisuje lekarza do bazy danych.
-     */
+
     public Doctor saveDoctor(Doctor doctor) {
         return doctorRepository.save(doctor);
     }
 
-    /**
-     * Znajduje lekarza po ID.
-     */
+
     public Optional<Doctor> getDoctorById(Long id) {
         return doctorRepository.findById(id);
     }

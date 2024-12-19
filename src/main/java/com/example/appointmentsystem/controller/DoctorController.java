@@ -32,7 +32,7 @@ public class DoctorController {
         Doctor doctor = doctorService.findByUserUsername(username)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        // Jawne wczytanie relacji lazy-loaded
+
         Hibernate.initialize(doctor.getUser());
         Hibernate.initialize(doctor.getServices());
 

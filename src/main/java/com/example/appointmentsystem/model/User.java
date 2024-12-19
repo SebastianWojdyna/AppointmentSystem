@@ -21,7 +21,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // Constructors
     public User() {}
 
     public User(String username, String email, String password, Role role){
@@ -31,7 +30,6 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -72,7 +70,6 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    // Implement methods from UserDetails
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -18,7 +18,6 @@ public class Doctor {
 
     private String specialization;
 
-    // Poprawiona relacja ManyToOne z User
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password"})

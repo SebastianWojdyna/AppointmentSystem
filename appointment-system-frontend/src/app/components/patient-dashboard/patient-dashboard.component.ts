@@ -75,4 +75,17 @@ export class PatientDashboardComponent implements OnInit {
       return null;
     }
   }
+
+  cancelAppointment(availabilityId: number): void{
+    this.http.delete(`http://localhost:8080/api/availability/cancel/${availabilityId}`).subscribe({
+      next: () => {
+        this.successMessage = "Rezerwacja zostala anulowana!";
+        this.loadAvailableAppointments();
+      },
+      error: (err) => {
+        this.errorMessage = "Nie udalo sie anulowac rezerwacji!";
+        console.error(err);
+      }
+    });
+  }
 }

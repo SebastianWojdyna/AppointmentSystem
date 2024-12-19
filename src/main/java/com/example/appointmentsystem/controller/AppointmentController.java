@@ -1,9 +1,11 @@
 package com.example.appointmentsystem.controller;
 
 import com.example.appointmentsystem.model.Appointment;
+import com.example.appointmentsystem.model.Availability;
 import com.example.appointmentsystem.model.Doctor;
 import com.example.appointmentsystem.model.User;
 import com.example.appointmentsystem.service.AppointmentService;
+import com.example.appointmentsystem.service.AvailabilityService;
 import com.example.appointmentsystem.service.DoctorService;
 import com.example.appointmentsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -27,6 +31,9 @@ public class AppointmentController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AvailabilityService availabilityService;
 
     // Dodawanie dostępności przez lekarza
     @PostMapping("/doctor/availability")
@@ -58,4 +65,5 @@ public class AppointmentController {
         appointmentService.bookAppointment(appointmentId, user);
         return ResponseEntity.ok("Appointment successfully booked");
     }
+
 }

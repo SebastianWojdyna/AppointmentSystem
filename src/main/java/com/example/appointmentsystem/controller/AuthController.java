@@ -32,9 +32,7 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    /**
-     * Logowanie użytkownika.
-     */
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
         String email = loginRequest.get("email");
@@ -67,9 +65,6 @@ public class AuthController {
         }
     }
 
-    /**
-     * Rejestracja nowego użytkownika z domyślną rolą PATIENT.
-     */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> registrationRequest) {
         String username = registrationRequest.get("username");
