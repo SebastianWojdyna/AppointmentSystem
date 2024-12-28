@@ -53,14 +53,6 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
     }
 
-    // Aktualizacja statusu płatności
-    public void updatePaymentStatus(String orderId, boolean isPaid) {
-        Appointment appointment = appointmentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Appointment not found for order ID: " + orderId));
-        appointment.setPaid(isPaid);
-        appointmentRepository.save(appointment);
-    }
-
     // Znajdowanie usługi na podstawie ID
     public AppointmentServiceType findServiceById(Long serviceId) {
         Optional<AppointmentServiceType> service = appointmentServiceTypeRepository.findById(serviceId);

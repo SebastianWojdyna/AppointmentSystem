@@ -12,7 +12,6 @@ public class Appointment {
 
     private String patientName;
     private LocalDateTime appointmentTime;
-    private boolean paid;
     private boolean available;
     private String orderId;
 
@@ -37,9 +36,6 @@ public class Appointment {
 
     public LocalDateTime getAppointmentTime() { return appointmentTime; }
     public void setAppointmentTime(LocalDateTime appointmentTime) { this.appointmentTime = appointmentTime; }
-
-    public boolean isPaid() { return paid; }
-    public void setPaid(boolean paid) { this.paid = paid; }
 
     public boolean isAvailable() { return available; }
     public void setAvailable(boolean available) { this.available = available; }
