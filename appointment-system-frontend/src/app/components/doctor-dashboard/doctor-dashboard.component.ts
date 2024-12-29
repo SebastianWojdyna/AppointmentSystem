@@ -28,7 +28,7 @@ export class DoctorDashboardComponent implements OnInit {
   }
 
   loadDoctorData(): void {
-    this.http.get<any>('http://localhost:8080/api/doctors/me').subscribe({
+    this.http.get<any>('https://appointment-system-backend.azurewebsites.net/api/doctors/me').subscribe({
       next: (data) => {
         this.currentDoctorId = data.id;
         this.loadDoctorAvailability();
@@ -41,7 +41,7 @@ export class DoctorDashboardComponent implements OnInit {
   }
 
   loadAvailableServices(): void {
-    this.http.get<any[]>('http://localhost:8080/api/services').subscribe({
+    this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/services').subscribe({
       next: (data) => (this.availableServices = data),
       error: (err) => {
         this.errorMessage = 'Nie udało się pobrać usług.';
@@ -53,7 +53,7 @@ export class DoctorDashboardComponent implements OnInit {
   loadDoctorAvailability(): void {
     if (this.currentDoctorId) {
       this.http
-        .get<any[]>(`http://localhost:8080/api/availability/doctor/${this.currentDoctorId}`)
+        .get<any[]>(`https://appointment-system-backend.azurewebsites.net/api/availability/doctor/${this.currentDoctorId}`)
         .subscribe({
           next: (data) => {
             this.availability = data.map(avail => ({
@@ -96,7 +96,7 @@ export class DoctorDashboardComponent implements OnInit {
       price: this.price
     };
 
-    this.http.post('http://localhost:8080/api/availability/add', requestBody, { responseType: 'text' }).subscribe({
+    this.http.post('https://appointment-system-backend.azurewebsites.net/api/availability/add', requestBody, { responseType: 'text' }).subscribe({
       next: (response) => {
         this.successMessage = 'Dostępność została dodana!';
         this.clearForm();
@@ -112,7 +112,7 @@ export class DoctorDashboardComponent implements OnInit {
   deleteAvailability(availabilityId: number): void {
     if (!availabilityId) return;
 
-    this.http.delete(`http://localhost:8080/api/availability/delete/${availabilityId}`).subscribe({
+    this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/availability/delete/${availabilityId}`).subscribe({
       next: () => {
         this.successMessage = 'Dostępność została usunięta!';
         this.loadDoctorAvailability(); // Odśwież listę dostępności
@@ -132,7 +132,7 @@ export class DoctorDashboardComponent implements OnInit {
 
     const newService = { name: this.newServiceName.trim(), price: this.newServicePrice };
 
-    this.http.post<any>('http://localhost:8080/api/services/add', newService, {
+    this.http.post<any>('https://appointment-system-backend.azurewebsites.net/api/services/add', newService, {
       headers: { 'Content-Type': 'application/json' }
     }).subscribe({
       next: (data) => {

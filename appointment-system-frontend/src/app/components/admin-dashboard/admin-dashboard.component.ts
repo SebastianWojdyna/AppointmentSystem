@@ -29,7 +29,7 @@ export class AdminDashboardComponent implements OnInit {
   // Ładowanie użytkowników
   loadUsers(): void {
     this.clearMessages();
-    this.http.get<any>('http://localhost:8080/api/admin/users').subscribe({
+    this.http.get<any>('https://appointment-system-backend.azurewebsites.net/api/admin/users').subscribe({
       next: (response) => {
         this.users = response.content || [];
       },
@@ -54,7 +54,7 @@ export class AdminDashboardComponent implements OnInit {
       delete userToAdd.specialization;
     }
 
-    this.http.post('http://localhost:8080/api/admin/users', userToAdd).subscribe({
+    this.http.post('https://appointment-system-backend.azurewebsites.net/api/admin/users', userToAdd).subscribe({
       next: () => {
         this.successMessage = 'Użytkownik dodany pomyślnie!';
         this.newUser = { username: '', email: '', password: '', role: '', specialization: '' };
@@ -77,7 +77,7 @@ export class AdminDashboardComponent implements OnInit {
       requestBody.specialization = this.updatedUser.specialization || 'Not Specified';
     }
 
-    this.http.patch(`http://localhost:8080/api/admin/users/${userId}/role`, requestBody).subscribe({
+    this.http.patch(`https://appointment-system-backend.azurewebsites.net/api/admin/users/${userId}/role`, requestBody).subscribe({
       next: () => {
         this.successMessage = `Rola użytkownika została zmieniona na ${newRole}.`;
         this.loadUsers();
@@ -109,7 +109,7 @@ export class AdminDashboardComponent implements OnInit {
       delete userToUpdate.specialization;
     }
 
-    this.http.put(`http://localhost:8080/api/admin/users/${userToUpdate.id}`, userToUpdate).subscribe({
+    this.http.put(`https://appointment-system-backend.azurewebsites.net/api/admin/users/${userToUpdate.id}`, userToUpdate).subscribe({
       next: () => {
         this.successMessage = 'Dane użytkownika zostały zaktualizowane.';
         this.updatedUser = { id: null, username: '', email: '', role: '', specialization: '' };
@@ -126,7 +126,7 @@ export class AdminDashboardComponent implements OnInit {
   deleteUser(userId: number): void {
     this.clearMessages();
     if (confirm('Czy na pewno chcesz usunąć tego użytkownika?')) {
-      this.http.delete(`http://localhost:8080/api/admin/users/${userId}`).subscribe({
+      this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/admin/users/${userId}`).subscribe({
         next: () => {
           this.successMessage = 'Użytkownik został usunięty.';
           this.loadUsers();

@@ -20,7 +20,7 @@ export class PatientDashboardComponent implements OnInit {
   }
 
   loadAvailableAppointments(): void {
-    this.http.get<any[]>('http://localhost:8080/api/availability').subscribe({
+    this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability').subscribe({
       next: (data) => {
         this.availableAppointments = data
           .filter(appt => !appt.isBooked)
@@ -37,7 +37,7 @@ export class PatientDashboardComponent implements OnInit {
   }
 
   loadReservedAppointments(): void {
-    this.http.get<any[]>('http://localhost:8080/api/availability/reserved').subscribe({
+    this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability/reserved').subscribe({
       next: (data) => {
         this.reservedAppointments = data.map(appt => ({
           ...appt,
@@ -52,7 +52,7 @@ export class PatientDashboardComponent implements OnInit {
   }
 
   bookAppointment(availabilityId: number): void {
-    this.http.post(`http://localhost:8080/api/availability/book/${availabilityId}`, null).subscribe({
+    this.http.post(`https://appointment-system-backend.azurewebsites.net/api/availability/book/${availabilityId}`, null).subscribe({
       next: () => {
         this.successMessage = 'Wizyta została zarezerwowana!';
         this.loadAvailableAppointments();
@@ -77,7 +77,7 @@ export class PatientDashboardComponent implements OnInit {
   }
 
   cancelAppointment(availabilityId: number): void{
-    this.http.delete(`http://localhost:8080/api/availability/cancel/${availabilityId}`).subscribe({
+    this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/availability/cancel/${availabilityId}`).subscribe({
       next: () => {
         this.successMessage = "Rezerwacja zostala anulowana!";
         this.loadAvailableAppointments();

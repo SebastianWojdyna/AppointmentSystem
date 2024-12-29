@@ -14,7 +14,7 @@ export class RegisterComponent {
 
   // Metoda do obsługi rejestracji
   register() {
-    this.http.post('http://localhost:8080/api/auth/register', this.user).subscribe(
+    this.http.post('https://appointment-system-backend.azurewebsites.net/api/auth/register', this.user).subscribe(
       (response: any) => {
         alert('Rejestracja zakończona sukcesem. Możesz się teraz zalogować.');
         this.router.navigate(['/login']);

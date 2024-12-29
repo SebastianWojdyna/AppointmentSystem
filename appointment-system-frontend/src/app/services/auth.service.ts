@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  private loginUrl = 'http://localhost:8080/api/auth/login';
+  private loginUrl = 'https://appointment-system-backend.azurewebsites.net/api/auth/login';
 
   constructor(private http: HttpClient) {}
 

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ServiceService {
 
-  private apiUrl = 'http://localhost:8080/api/services';
+  private apiUrl = 'https://appointment-system-backend.azurewebsites.net/api/services';
 
   constructor(private http: HttpClient) { }
 

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = 'http://localhost:8080/api/admin/dashboard';
+  private apiUrl = 'https://appointment-system-backend.azurewebsites.net/api/admin/dashboard';
 
   constructor(private http: HttpClient) {
     console.log('AdminService initialized');
