@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class PatientDashboardComponent implements OnInit {
   availableAppointments: any[] = [];
-  reservedAppointments: any[] = []; // Nowa lista zarezerwowanych wizyt
+  reservedAppointments: any[] = [];
   successMessage: string = '';
   errorMessage: string = '';
 
@@ -56,7 +56,7 @@ export class PatientDashboardComponent implements OnInit {
       next: () => {
         this.successMessage = 'Wizyta została zarezerwowana!';
         this.loadAvailableAppointments();
-        this.loadReservedAppointments(); // Odśwież również zarezerwowane wizyty
+        this.loadReservedAppointments();
       },
       error: (err) => {
         this.errorMessage = 'Nie udało się zarezerwować wizyty.';
@@ -76,14 +76,15 @@ export class PatientDashboardComponent implements OnInit {
     }
   }
 
-  cancelAppointment(availabilityId: number): void{
+  cancelAppointment(availabilityId: number): void {
     this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/availability/cancel/${availabilityId}`).subscribe({
       next: () => {
-        this.successMessage = "Rezerwacja zostala anulowana!";
+        this.successMessage = "Rezerwacja została anulowana!";
         this.loadAvailableAppointments();
+        this.loadReservedAppointments();  // <- Odświeżanie tabeli rezerwacji
       },
       error: (err) => {
-        this.errorMessage = "Nie udalo sie anulowac rezerwacji!";
+        this.errorMessage = "Nie udało się anulować rezerwacji!";
         console.error(err);
       }
     });
