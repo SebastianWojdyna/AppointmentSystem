@@ -72,18 +72,4 @@ public class SecurityConfig {
                 .and()
                 .build();
     }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Wszystkie endpointy
-                        .allowedOrigins("https://gentle-pond-001548203.4.azurestaticapps.net") // Adres Frontendu
-                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS") // Dozwolone metody HTTP
-                        .allowedHeaders("*") // Pozwól na wszystkie nagłówki
-                        .allowCredentials(true); // Obsługuje ciasteczka/sesje
-            }
-        };
-    }
 }
