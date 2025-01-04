@@ -1,19 +1,19 @@
 <div class="container mt-4">
-  <h1 class="mb-4 text-center">Dostępne Wizyty</h1>
+  <h1 class="mb-4 text-center section-title">Dostępne Wizyty</h1>
 
   <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
   <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
   <!-- Dostępne wizyty -->
-  <table class="table table-striped table-bordered">
+  <table class="table table-striped table-bordered text-center">
     <thead>
     <tr>
-      <th>ID</th>
-      <th>Usługa</th>
-      <th>Data i Godzina</th>
-      <th>Cena</th>
-      <th>Lekarz</th>
-      <th>Akcja</th>
+      <th style="width: 5%;">ID</th>
+      <th style="width: 20%;">Usługa</th>
+      <th style="width: 25%;">Data i Godzina</th>
+      <th style="width: 15%;">Cena</th>
+      <th style="width: 20%;">Lekarz</th>
+      <th style="width: 15%;">Akcja</th>
     </tr>
     </thead>
     <tbody>
@@ -37,16 +37,16 @@
   </div>
 
   <!-- Zarezerwowane wizyty -->
-  <h2 class="mt-5 mb-3 text-center">Zarezerwowane Wizyty</h2>
-  <table class="table table-striped table-bordered">
+  <h1 class="mt-5 mb-3 text-center section-title">Zarezerwowane Wizyty</h1>
+  <table class="table table-striped table-bordered text-center">
     <thead>
     <tr>
-      <th>ID</th>
-      <th>Usługa</th>
-      <th>Data i Godzina</th>
-      <th>Cena</th>
-      <th>Lekarz</th>
-      <th>Akcja</th>  <!-- Dodano kolumnę Akcja -->
+      <th style="width: 5%;">ID</th>
+      <th style="width: 20%;">Usługa</th>
+      <th style="width: 25%;">Data i Godzina</th>
+      <th style="width: 15%;">Cena</th>
+      <th style="width: 20%;">Lekarz</th>
+      <th style="width: 15%;">Akcja</th>
     </tr>
     </thead>
     <tbody>
