@@ -79,7 +79,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Wszystkie endpointy
-                        .allowedOrigins("http://localhost:4200") // Adres Angulara
+                        .allowedOrigins("https://gentle-pond-001548203.4.azurestaticapps.net") // Adres Angulara
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS") // Dozwolone metody HTTP
                         .allowedHeaders("*") // Pozwól na wszystkie nagłówki
                         .allowCredentials(true); // Obsługuje ciasteczka/sesje
