@@ -8,8 +8,8 @@
       <div class="form-row">
         <div class="form-group col-md-4">
           <label for="serviceSelect">Wybierz typ wizyty</label>
-          <select class="form-control" id="serviceSelect" [(ngModel)]="selectedServiceId">
-            <option *ngFor="let service of availableServices" [value]="service.id">
+          <select class="form-control" id="serviceSelect" [(ngModel)]="selectedServiceId" (change)="updatePrice()">
+            <option *ngFor="let service of availableServices" [value]="service.id" [attr.data-price]="service.price">
               {{ service.name }}
             </option>
           </select>
@@ -20,7 +20,7 @@
         </div>
         <div class="form-group col-md-4">
           <label for="price">Cena</label>
-          <input type="number" class="form-control" id="price" [(ngModel)]="price" placeholder="Podaj cenę" />
+          <input type="number" class="form-control" id="price" [(ngModel)]="price" [readonly]="true" />
         </div>
       </div>
       <button class="btn btn-outline-success btn-block" (click)="addAvailability()">Dodaj Dostępność</button>
@@ -61,6 +61,9 @@
           <td>
             <button class="btn btn-outline-danger btn-sm" (click)="deleteAvailability(avail.id)">
               Usuń
+            </button>
+            <button class="btn btn-outline-primary btn-sm ml-2" (click)="editAvailability(avail)">
+              Edytuj
             </button>
           </td>
         </tr>

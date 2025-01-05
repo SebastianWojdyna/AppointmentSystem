@@ -85,15 +85,14 @@ export class DoctorDashboardComponent implements OnInit {
   }
 
   addAvailability(): void {
-    if (!this.selectedServiceId || !this.selectedDateTime || this.price <= 0) {
-      this.errorMessage = 'Wszystkie pola są wymagane.';
+    if (!this.selectedServiceId || !this.selectedDateTime) {
+      this.errorMessage = 'Wybierz usługę i datę.';
       return;
     }
 
     const requestBody = {
       serviceId: this.selectedServiceId,
-      availableTimes: [this.selectedDateTime],
-      price: this.price
+      availableTimes: [this.selectedDateTime]
     };
 
     this.http.post('https://appointment-system-backend.azurewebsites.net/api/availability/add', requestBody, { responseType: 'text' }).subscribe({
@@ -166,5 +165,12 @@ export class DoctorDashboardComponent implements OnInit {
   clearNewServiceForm(): void {
     this.newServiceName = '';
     this.newServicePrice = null;
+  }
+
+  updatePrice(): void {
+    const selectedService = this.availableServices.find(service => service.id === this.selectedServiceId);
+    if (selectedService) {
+      this.price = selectedService.price;
+    }
   }
 }
