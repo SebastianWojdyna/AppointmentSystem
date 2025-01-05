@@ -6,7 +6,7 @@
     <div class="card-header font-weight-bold">Dodaj Dostępność</div>
     <div class="card-body">
       <div class="form-row">
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-6">
           <label for="serviceSelect">Wybierz typ wizyty</label>
           <select class="form-control" id="serviceSelect" [(ngModel)]="selectedServiceId" (change)="updatePrice()">
             <option *ngFor="let service of availableServices" [value]="service.id" [attr.data-price]="service.price">
@@ -14,7 +14,7 @@
             </option>
           </select>
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-6">
           <label for="dateTime">Data i godzina</label>
           <input type="datetime-local" class="form-control" id="dateTime" [(ngModel)]="selectedDateTime" />
         </div>
@@ -24,10 +24,10 @@
   </div>
 
   <!-- Tabela dostępności -->
-  <div class="card">
+  <div class="card mb-4">
     <div class="card-header font-weight-bold">Twoja Dostępność</div>
     <div class="card-body">
-      <table class="table table-striped table-bordered">
+      <table class="table table-striped table-bordered text-center">
         <thead class="thead-light">
         <tr>
           <th>ID</th>
@@ -47,12 +47,12 @@
           <td>{{ avail?.price || '0' }} zł</td>
           <td>{{ avail?.specialization || 'Brak specjalizacji' }}</td>
           <td>
-              <span *ngIf="avail?.isBooked" class="text-success">
-                &#10004; Zarezerwowana
-              </span>
+            <span *ngIf="avail?.isBooked" class="text-success">
+              &#10004; Zarezerwowana
+            </span>
             <span *ngIf="!avail?.isBooked" class="text-muted">
-                Dostępna
-              </span>
+              Dostępna
+            </span>
           </td>
           <td>
             <button class="btn btn-outline-danger btn-sm" (click)="deleteAvailability(avail.id)">
@@ -67,6 +67,41 @@
       </table>
       <div *ngIf="availability.length === 0" class="text-center text-muted mt-3">
         Brak dostępnych terminów.
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela typów usług lekarza -->
+  <div class="card mb-4">
+    <div class="card-header font-weight-bold">Twoje Typy Usług</div>
+    <div class="card-body">
+      <table class="table table-striped table-bordered text-center">
+        <thead class="thead-light">
+        <tr>
+          <th>ID</th>
+          <th>Nazwa Usługi</th>
+          <th>Cena</th>
+          <th>Akcje</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let service of availableServices">
+          <td>{{ service.id }}</td>
+          <td>{{ service.name }}</td>
+          <td>{{ service.price }} zł</td>
+          <td>
+            <button class="btn btn-outline-warning btn-sm" (click)="editService(service)">
+              Edytuj
+            </button>
+            <button class="btn btn-outline-danger btn-sm ml-2" (click)="deleteService(service.id)">
+              Usuń
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div *ngIf="availableServices.length === 0" class="text-center text-muted mt-3">
+        Brak typów usług.
       </div>
     </div>
   </div>
