@@ -112,6 +112,14 @@ export class DoctorDashboardComponent implements OnInit {
   deleteAvailability(availabilityId: number): void {
     if (!availabilityId) return;
 
+    const appointment = this.availability.find(a => a.id === availabilityId);
+    if (appointment?.isBooked) {
+      const confirmed = confirm('Ta wizyta jest zarezerwowana. Czy na pewno chcesz ją usunąć?');
+      if (!confirmed) {
+        return;
+      }
+    }
+
     this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/availability/delete/${availabilityId}`).subscribe({
       next: () => {
         this.successMessage = 'Dostępność została usunięta!';
