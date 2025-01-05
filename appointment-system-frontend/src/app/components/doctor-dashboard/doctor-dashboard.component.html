@@ -18,10 +18,6 @@
           <label for="dateTime">Data i godzina</label>
           <input type="datetime-local" class="form-control" id="dateTime" [(ngModel)]="selectedDateTime" />
         </div>
-        <div class="form-group col-md-4">
-          <label for="price">Cena</label>
-          <input type="number" class="form-control" id="price" [(ngModel)]="price" [readonly]="true" />
-        </div>
       </div>
       <button class="btn btn-outline-success btn-block" (click)="addAvailability()">Dodaj Dostępność</button>
     </div>
