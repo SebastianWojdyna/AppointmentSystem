@@ -91,5 +91,17 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
+        // Jeśli użytkownik jest lekarzem, usuń również powiązaną encję Doctor
+        if (user.getRole() == Role.DOCTOR) {
+            doctorRepository.findByUserId(user.getId()).ifPresent(doctor -> {
+                doctorRepository.delete(doctor);
+            });
+        }
+
+        userRepository.delete(user);
+    }
 }
