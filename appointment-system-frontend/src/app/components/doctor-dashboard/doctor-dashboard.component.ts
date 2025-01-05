@@ -20,6 +20,8 @@ export class DoctorDashboardComponent implements OnInit {
   successMessage: string = '';
   errorMessage: string = '';
 
+  editingAvailability: any = null;  // Do edycji dostępności
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
@@ -62,7 +64,7 @@ export class DoctorDashboardComponent implements OnInit {
               availableTime: this.parseDate(avail.availableTime),
               price: avail.price || 0,
               specialization: avail.specialization || 'Brak specjalizacji',
-              isBooked: avail.isBooked || false // Flaga rezerwacji
+              isBooked: avail.isBooked || false
             }));
           },
           error: (err) => {
@@ -96,7 +98,7 @@ export class DoctorDashboardComponent implements OnInit {
     };
 
     this.http.post('https://appointment-system-backend.azurewebsites.net/api/availability/add', requestBody, { responseType: 'text' }).subscribe({
-      next: (response) => {
+      next: () => {
         this.successMessage = 'Dostępność została dodana!';
         this.clearForm();
         this.loadDoctorAvailability();
@@ -131,6 +133,13 @@ export class DoctorDashboardComponent implements OnInit {
     });
   }
 
+  editAvailability(avail: any): void {
+    this.editingAvailability = { ...avail };
+    this.selectedServiceId = avail.service.id;
+    this.selectedDateTime = new Date(avail.availableTime).toISOString().slice(0, 16);
+    this.price = avail.price;
+  }
+
   addNewService(): void {
     if (!this.newServiceName || this.newServicePrice === null || this.newServicePrice <= 0) {
       this.errorMessage = 'Wprowadź poprawną nazwę i cenę usługi.';
@@ -158,6 +167,7 @@ export class DoctorDashboardComponent implements OnInit {
     this.selectedServiceId = 0;
     this.selectedDateTime = '';
     this.price = 0;
+    this.editingAvailability = null;
     this.errorMessage = '';
     this.successMessage = '';
   }
