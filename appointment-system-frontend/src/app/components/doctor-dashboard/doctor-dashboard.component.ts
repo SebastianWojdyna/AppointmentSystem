@@ -20,7 +20,8 @@ export class DoctorDashboardComponent implements OnInit {
   successMessage: string = '';
   errorMessage: string = '';
 
-  editingAvailability: any = null;  // Do edycji dostępności
+  editingAvailability: any = null;  // Dostępność do edycji
+  editingService: any = null;       // Usługa do edycji
 
   constructor(private http: HttpClient) {}
 
@@ -124,7 +125,7 @@ export class DoctorDashboardComponent implements OnInit {
     this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/availability/delete/${availabilityId}`).subscribe({
       next: () => {
         this.successMessage = 'Dostępność została usunięta!';
-        this.loadDoctorAvailability(); // Odśwież listę dostępności
+        this.loadDoctorAvailability();
       },
       error: (err) => {
         this.errorMessage = 'Błąd przy usuwaniu dostępności.';
@@ -138,6 +139,28 @@ export class DoctorDashboardComponent implements OnInit {
     this.selectedServiceId = avail.service.id;
     this.selectedDateTime = new Date(avail.availableTime).toISOString().slice(0, 16);
     this.price = avail.price;
+  }
+
+  editService(service: any): void {
+    this.editingService = { ...service };
+    this.newServiceName = service.name;
+    this.newServicePrice = service.price;
+  }
+
+  deleteService(serviceId: number): void {
+    const confirmed = confirm('Czy na pewno chcesz usunąć tę usługę?');
+    if (!confirmed) return;
+
+    this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/services/${serviceId}`).subscribe({
+      next: () => {
+        this.successMessage = 'Usługa została usunięta!';
+        this.loadAvailableServices();
+      },
+      error: (err) => {
+        this.errorMessage = 'Nie udało się usunąć usługi.';
+        console.error(err);
+      }
+    });
   }
 
   addNewService(): void {
@@ -175,6 +198,7 @@ export class DoctorDashboardComponent implements OnInit {
   clearNewServiceForm(): void {
     this.newServiceName = '';
     this.newServicePrice = null;
+    this.editingService = null;
   }
 
   updatePrice(): void {
