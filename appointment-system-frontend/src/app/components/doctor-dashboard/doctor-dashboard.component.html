@@ -23,6 +23,26 @@
     </div>
   </div>
 
+  <!-- Formularz edycji dostępności -->
+  <div *ngIf="editingAvailability" class="card mt-4">
+    <div class="card-header">Edytuj Dostępność</div>
+    <div class="card-body">
+      <form (submit)="updateAvailability()">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Usługa</label>
+            <input type="text" class="form-control" [(ngModel)]="editingAvailability.service.name" disabled>
+          </div>
+          <div class="form-group col-md-6">
+            <label>Data i godzina</label>
+            <input type="datetime-local" class="form-control" [(ngModel)]="editingAvailability.availableTime" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Zapisz zmiany</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Tabela dostępności -->
   <div class="card mb-4">
     <div class="card-header font-weight-bold">Twoja Dostępność</div>
@@ -139,4 +159,23 @@
       <button class="btn btn-outline-primary btn-block" (click)="addNewService()">Dodaj Typ Usługi</button>
     </div>
   </div>
+
+  <!-- Formularz edycji usług -->
+  <div *ngIf="editingService" class="card mt-4">
+    <div class="card-header">Edytuj Typ Usługi</div>
+    <div class="card-body">
+      <form (submit)="updateService()">
+        <div class="form-group">
+          <label>Nazwa Usługi</label>
+          <input type="text" class="form-control" [(ngModel)]="editingService.name" required>
+        </div>
+        <div class="form-group">
+          <label>Cena</label>
+          <input type="number" class="form-control" [(ngModel)]="editingService.price" required>
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Zapisz zmiany</button>
+      </form>
+    </div>
+  </div>
 </div>
+

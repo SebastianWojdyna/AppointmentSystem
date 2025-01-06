@@ -136,15 +136,46 @@ export class DoctorDashboardComponent implements OnInit {
 
   editAvailability(avail: any): void {
     this.editingAvailability = { ...avail };
-    this.selectedServiceId = avail.service.id;
-    this.selectedDateTime = new Date(avail.availableTime).toISOString().slice(0, 16);
-    this.price = avail.price;
+  }
+
+  updateAvailability(): void {
+    const updatedAvailability = {
+      serviceId: this.editingAvailability.service.id,
+      availableTime: this.editingAvailability.availableTime,
+    };
+
+    this.http.put(`https://appointment-system-backend.azurewebsites.net/api/availability/${this.editingAvailability.id}`, updatedAvailability).subscribe({
+      next: () => {
+        this.successMessage = 'Dostępność została zaktualizowana.';
+        this.editingAvailability = null;
+        this.loadDoctorAvailability();
+      },
+      error: (err) => {
+        this.errorMessage = 'Nie udało się zaktualizować dostępności.';
+      }
+    });
   }
 
   editService(service: any): void {
     this.editingService = { ...service };
-    this.newServiceName = service.name;
-    this.newServicePrice = service.price;
+  }
+
+  updateService(): void {
+    const updatedService = {
+      name: this.editingService.name,
+      price: this.editingService.price
+    };
+
+    this.http.put(`https://appointment-system-backend.azurewebsites.net/api/services/${this.editingService.id}`, updatedService).subscribe({
+      next: () => {
+        this.successMessage = 'Usługa została zaktualizowana.';
+        this.editingService = null;
+        this.loadAvailableServices();
+      },
+      error: (err) => {
+        this.errorMessage = 'Nie udało się zaktualizować usługi.';
+      }
+    });
   }
 
   deleteService(serviceId: number): void {
