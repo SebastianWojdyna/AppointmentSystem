@@ -54,9 +54,15 @@ export class PatientDashboardComponent implements OnInit {
 
   applyFilters(): void {
     this.filteredAppointments = this.availableAppointments.filter(appt => {
-      const matchesDate = this.filterDate ? appt.availableTime.startsWith(this.filterDate) : true;
-      const matchesSpec = this.filterSpecialization ? appt.specialization === this.filterSpecialization : true;
-      const matchesDoctor = this.filterDoctor ? appt.doctor.name === this.filterDoctor : true;
+      const matchesDate = this.filterDate
+        ? appt.availableTime.slice(0, 10) === this.filterDate
+        : true;
+      const matchesSpec = this.filterSpecialization
+        ? appt.specialization === this.filterSpecialization
+        : true;
+      const matchesDoctor = this.filterDoctor
+        ? appt.doctor.name === this.filterDoctor
+        : true;
       return matchesDate && matchesSpec && matchesDoctor;
     });
   }
@@ -83,20 +89,6 @@ export class PatientDashboardComponent implements OnInit {
     });
   }
 
-  bookAppointment(availabilityId: number): void {
-    this.http.post(`https://appointment-system-backend.azurewebsites.net/api/availability/book/${availabilityId}`, null).subscribe({
-      next: () => {
-        this.successMessage = 'Wizyta została zarezerwowana!';
-        this.loadAvailableAppointments();
-        this.loadReservedAppointments();
-      },
-      error: (err) => {
-        this.errorMessage = 'Nie udało się zarezerwować wizyty.';
-        console.error(err);
-      }
-    });
-  }
-
   parseDate(rawDate: any): string | null {
     try {
       if (!rawDate) return null;
@@ -108,7 +100,7 @@ export class PatientDashboardComponent implements OnInit {
     }
   }
 
-  cancelAppointment(availabilityId: number): void {
+cancelAppointment(availabilityId: number): void {
     this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/availability/cancel/${availabilityId}`).subscribe({
       next: () => {
         this.successMessage = "Rezerwacja została anulowana!";

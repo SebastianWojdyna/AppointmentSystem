@@ -8,18 +8,31 @@
       <div class="form-row">
         <div class="form-group col-md-3">
           <label for="filterDate">Data</label>
-          <input type="date" class="form-control" id="filterDate" [(ngModel)]="filterDate">
+          <input
+            type="date"
+            class="form-control"
+            id="filterDate"
+            [(ngModel)]="filterDate"
+            (change)="applyFilters()">
         </div>
         <div class="form-group col-md-3">
           <label for="filterSpecialization">Specjalizacja</label>
-          <select class="form-control" id="filterSpecialization" [(ngModel)]="filterSpecialization">
+          <select
+            class="form-control"
+            id="filterSpecialization"
+            [(ngModel)]="filterSpecialization"
+            (change)="applyFilters()">
             <option value="">Wszystkie</option>
             <option *ngFor="let spec of specializations" [value]="spec">{{ spec }}</option>
           </select>
         </div>
         <div class="form-group col-md-3">
           <label for="filterDoctor">Lekarz</label>
-          <select class="form-control" id="filterDoctor" [(ngModel)]="filterDoctor">
+          <select
+            class="form-control"
+            id="filterDoctor"
+            [(ngModel)]="filterDoctor"
+            (change)="applyFilters()">
             <option value="">Wszyscy</option>
             <option *ngFor="let doc of doctors" [value]="doc">{{ doc }}</option>
           </select>
@@ -35,7 +48,7 @@
   <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
   <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
-  <!-- Dostępne wizyty -->
+  <!-- Tabela dostępnych wizyt -->
   <table class="table table-striped table-bordered text-center">
     <thead>
     <tr>
@@ -48,7 +61,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let appt of availableAppointments">
+    <tr *ngFor="let appt of filteredAppointments">
       <td>{{ appt.id }}</td>
       <td>{{ appt.service.name }}</td>
       <td>{{ appt.availableTime | date: 'yyyy-MM-dd HH:mm' }}</td>
@@ -63,7 +76,7 @@
     </tbody>
   </table>
 
-  <div *ngIf="availableAppointments.length === 0" class="text-center text-muted">
+  <div *ngIf="filteredAppointments.length === 0" class="text-center text-muted">
     Brak dostępnych wizyt.
   </div>
 
@@ -91,9 +104,8 @@
         <button
           *ngIf="appt.isBooked"
           class="btn btn-outline-danger btn-sm"
-          (click)="cancelAppointment(appt.id)"
-        >
-          Usuń
+          (click)="cancelAppointment(appt.id)">
+          Anuluj
         </button>
       </td>
     </tr>
