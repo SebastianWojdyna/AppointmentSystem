@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AvailabilityService {
@@ -81,6 +82,13 @@ public class AvailabilityService {
         availability.setIsBooked(false);
         availability.setPatient(null);
         availabilityRepository.save(availability);
+    }
+
+    public List<Availability> filterAvailability(String date, String specialization) {
+        return availabilityRepository.findAll().stream()
+                .filter(a -> (date == null || a.getAvailableTime().toLocalDate().toString().equals(date)))
+                .filter(a -> (specialization == null || a.getSpecialization().equalsIgnoreCase(specialization)))
+                .collect(Collectors.toList());
     }
 
 }

@@ -142,4 +142,13 @@ public class AvailabilityController {
         return ResponseEntity.ok(Collections.singletonMap("message", "Rezerwacja została anulowana!"));
 
     }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Availability>> filterAvailability(
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String specialization) {
+
+        List<Availability> availabilities = availabilityService.filterAvailability(date, specialization);
+        return ResponseEntity.ok(availabilities);
+    }
 }
