@@ -19,6 +19,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { AuthInterceptor } from './auth.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ReservedAppointmentsComponent } from './components/reserved-appointments/reserved-appointments.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     AdminDashboardComponent,
     DoctorDashboardComponent,
     ReceptionistDashboardComponent,
-    PatientDashboardComponent
+    PatientDashboardComponent,
+    ReservedAppointmentsComponent
   ],
   imports: [
     BrowserModule,

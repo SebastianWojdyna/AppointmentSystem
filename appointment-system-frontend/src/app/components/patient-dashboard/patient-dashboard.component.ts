@@ -9,7 +9,6 @@ import { HttpClient } from '@angular/common/http';
 export class PatientDashboardComponent implements OnInit {
   availableAppointments: any[] = [];
   filteredAppointments: any[] = [];
-  reservedAppointments: any[] = [];
   specializations: string[] = [];
   doctors: string[] = [];
   filterDate: string = '';
@@ -22,7 +21,6 @@ export class PatientDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAvailableAppointments();
-    this.loadReservedAppointments();
     this.filteredAppointments = [];  // Początkowo lista pusta
   }
 
@@ -73,27 +71,12 @@ export class PatientDashboardComponent implements OnInit {
     this.filteredAppointments = [];  // Pusta lista po resecie
   }
 
-  loadReservedAppointments(): void {
-    this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability/reserved').subscribe({
-      next: (data) => {
-        this.reservedAppointments = data.map(appt => ({
-          ...appt,
-          availableTime: this.parseDate(appt.availableTime)
-        }));
-      },
-      error: (err) => {
-        this.errorMessage = 'Nie udało się pobrać zarezerwowanych wizyt.';
-        console.error('Failed to load reserved appointments:', err);
-      }
-    });
-  }
 
   bookAppointment(availabilityId: number): void {
     this.http.post(`https://appointment-system-backend.azurewebsites.net/api/availability/book/${availabilityId}`, null).subscribe({
       next: () => {
         this.successMessage = 'Wizyta została zarezerwowana!';
         this.loadAvailableAppointments();
-        this.loadReservedAppointments();
       },
       error: (err) => {
         this.errorMessage = 'Nie udało się zarezerwować wizyty.';
@@ -111,19 +94,5 @@ export class PatientDashboardComponent implements OnInit {
       console.error('Error parsing date:', rawDate, error);
       return null;
     }
-  }
-
-  cancelAppointment(availabilityId: number): void {
-    this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/availability/cancel/${availabilityId}`).subscribe({
-      next: () => {
-        this.successMessage = "Rezerwacja została anulowana!";
-        this.loadAvailableAppointments();
-        this.loadReservedAppointments();
-      },
-      error: (err) => {
-        this.errorMessage = "Nie udało się anulować rezerwacji!";
-        console.error(err);
-      }
-    });
   }
 }

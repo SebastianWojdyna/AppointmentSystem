@@ -9,8 +9,13 @@ import { DoctorDashboardComponent } from './components/doctor-dashboard/doctor-d
 import { ReceptionistDashboardComponent } from './components/receptionist-dashboard/receptionist-dashboard.component';
 import { PatientDashboardComponent } from './components/patient-dashboard/patient-dashboard.component';
 import { AuthGuard } from './auth.guard';
+import { ReservedAppointmentsComponent } from './components/reserved-appointments/reserved-appointments.component';
 
 const routes: Routes = [
+  { path: 'reserve', component: PatientDashboardComponent },  // Zarezerwuj wizytę
+  { path: 'reserved', component: ReservedAppointmentsComponent },  // Twoje zarezerwowane wizyty
+  { path: '', redirectTo: '/reserve', pathMatch: 'full' },  // Domyślnie przekierowuje na Zarezerwuj wizytę
+  { path: '**', redirectTo: '/reserve' },  // Przekierowanie na /reserve jeśli ścieżka jest błędna
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
