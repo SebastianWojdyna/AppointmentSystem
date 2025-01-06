@@ -61,6 +61,13 @@ export class PatientDashboardComponent implements OnInit {
     });
   }
 
+  resetFilters(): void {
+    this.filterDate = '';
+    this.filterSpecialization = '';
+    this.filterDoctor = '';
+    this.filteredAppointments = [...this.availableAppointments];
+  }
+
   loadReservedAppointments(): void {
     this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability/reserved').subscribe({
       next: (data) => {
@@ -106,7 +113,7 @@ export class PatientDashboardComponent implements OnInit {
       next: () => {
         this.successMessage = "Rezerwacja została anulowana!";
         this.loadAvailableAppointments();
-        this.loadReservedAppointments();  // <- Odświeżanie tabeli rezerwacji
+        this.loadReservedAppointments();
       },
       error: (err) => {
         this.errorMessage = "Nie udało się anulować rezerwacji!";
