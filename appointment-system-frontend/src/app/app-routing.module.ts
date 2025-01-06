@@ -14,8 +14,6 @@ import { ReservedAppointmentsComponent } from './components/reserved-appointment
 const routes: Routes = [
   { path: 'reserve', component: PatientDashboardComponent },  // Zarezerwuj wizytę
   { path: 'reserved', component: ReservedAppointmentsComponent },  // Twoje zarezerwowane wizyty
-  { path: '', redirectTo: '/reserve', pathMatch: 'full' },  // Domyślnie przekierowuje na Zarezerwuj wizytę
-  { path: '**', redirectTo: '/reserve' },  // Przekierowanie na /reserve jeśli ścieżka jest błędna
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
