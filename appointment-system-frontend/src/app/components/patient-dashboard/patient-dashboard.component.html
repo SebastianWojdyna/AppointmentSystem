@@ -6,20 +6,31 @@
     <div class="card-header">Filtruj wizyty</div>
     <div class="card-body">
       <div class="form-row">
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-3">
           <label for="filterDate">Data</label>
-          <input type="date" class="form-control" id="filterDate" [(ngModel)]="filterDate" (change)="applyFilters()">
+          <input type="date" class="form-control" id="filterDate" [(ngModel)]="filterDate">
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-3">
           <label for="filterSpecialization">Specjalizacja</label>
-          <select class="form-control" id="filterSpecialization" [(ngModel)]="filterSpecialization" (change)="applyFilters()">
+          <select class="form-control" id="filterSpecialization" [(ngModel)]="filterSpecialization">
             <option value="">Wszystkie</option>
             <option *ngFor="let spec of specializations" [value]="spec">{{ spec }}</option>
           </select>
         </div>
+        <div class="form-group col-md-3">
+          <label for="filterDoctor">Lekarz</label>
+          <select class="form-control" id="filterDoctor" [(ngModel)]="filterDoctor">
+            <option value="">Wszyscy</option>
+            <option *ngFor="let doc of doctors" [value]="doc">{{ doc }}</option>
+          </select>
+        </div>
+        <div class="form-group col-md-3 d-flex align-items-end">
+          <button class="btn btn-outline-primary btn-block" (click)="applyFilters()">Filtruj</button>
+        </div>
       </div>
     </div>
   </div>
+
 
   <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
   <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>

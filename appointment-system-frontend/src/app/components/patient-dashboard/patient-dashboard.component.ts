@@ -11,8 +11,10 @@ export class PatientDashboardComponent implements OnInit {
   filteredAppointments: any[] = [];
   reservedAppointments: any[] = [];
   specializations: string[] = [];
+  doctors: string[] = [];
   filterDate: string = '';
   filterSpecialization: string = '';
+  filterDoctor: string = '';
   successMessage: string = '';
   errorMessage: string = '';
 
@@ -33,7 +35,7 @@ export class PatientDashboardComponent implements OnInit {
             availableTime: this.parseDate(appt.availableTime)
           }));
         this.filteredAppointments = [...this.availableAppointments];
-        this.extractSpecializations();
+        this.extractFilters();
       },
       error: (err) => {
         this.errorMessage = 'Nie udało się pobrać dostępnych wizyt.';
@@ -42,16 +44,20 @@ export class PatientDashboardComponent implements OnInit {
     });
   }
 
-  extractSpecializations(): void {
+  extractFilters(): void {
     const specs = new Set(this.availableAppointments.map(appt => appt.specialization));
     this.specializations = Array.from(specs);
+
+    const doctorNames = new Set(this.availableAppointments.map(appt => appt.doctor.name));
+    this.doctors = Array.from(doctorNames);
   }
 
   applyFilters(): void {
     this.filteredAppointments = this.availableAppointments.filter(appt => {
       const matchesDate = this.filterDate ? appt.availableTime.startsWith(this.filterDate) : true;
       const matchesSpec = this.filterSpecialization ? appt.specialization === this.filterSpecialization : true;
-      return matchesDate && matchesSpec;
+      const matchesDoctor = this.filterDoctor ? appt.doctor.name === this.filterDoctor : true;
+      return matchesDate && matchesSpec && matchesDoctor;
     });
   }
 
