@@ -23,6 +23,7 @@ export class PatientDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.loadAvailableAppointments();
     this.loadReservedAppointments();
+    this.filteredAppointments = [];  // Początkowo lista pusta
   }
 
   loadAvailableAppointments(): void {
@@ -54,17 +55,16 @@ export class PatientDashboardComponent implements OnInit {
 
   applyFilters(): void {
     this.filteredAppointments = this.availableAppointments.filter(appt => {
-      const matchesDate = this.filterDate
-        ? appt.availableTime.slice(0, 10) === this.filterDate
-        : true;
-      const matchesSpec = this.filterSpecialization
-        ? appt.specialization === this.filterSpecialization
-        : true;
-      const matchesDoctor = this.filterDoctor
-        ? appt.doctor.name === this.filterDoctor
-        : true;
+      const matchesDate = this.filterDate ? appt.availableTime.startsWith(this.filterDate) : true;
+      const matchesSpec = this.filterSpecialization ? appt.specialization === this.filterSpecialization : true;
+      const matchesDoctor = this.filterDoctor ? appt.doctor.name === this.filterDoctor : true;
       return matchesDate && matchesSpec && matchesDoctor;
     });
+
+    // Jeśli żaden filtr nie jest wybrany, pokaż wszystkie
+    if (!this.filterDate && !this.filterSpecialization && !this.filterDoctor) {
+      this.filteredAppointments = [...this.availableAppointments];
+    }
   }
 
   resetFilters(): void {
