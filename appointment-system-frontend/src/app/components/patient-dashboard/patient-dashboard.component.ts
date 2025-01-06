@@ -13,8 +13,8 @@ export class PatientDashboardComponent implements OnInit {
   specializations: string[] = [];
   doctors: string[] = [];
   filterDate: string = '';
-  filterSpecialization: string = '';
-  filterDoctor: string = '';
+  filterSpecialization: string = 'Wybierz specjalizację';
+  filterDoctor: string = 'Wybierz lekarza';
   successMessage: string = '';
   errorMessage: string = '';
 
@@ -55,24 +55,26 @@ export class PatientDashboardComponent implements OnInit {
   applyFilters(): void {
     this.filteredAppointments = this.availableAppointments.filter(appt => {
       const matchesDate = this.filterDate ? appt.availableTime.startsWith(this.filterDate) : true;
-      const matchesSpec = this.filterSpecialization ? appt.specialization === this.filterSpecialization : true;
-      const matchesDoctor = this.filterDoctor ? appt.doctor.name === this.filterDoctor : true;
+      const matchesSpec = this.filterSpecialization !== 'Wybierz specjalizację' ? appt.specialization === this.filterSpecialization : true;
+      const matchesDoctor = this.filterDoctor !== 'Wybierz lekarza' ? appt.doctor.name === this.filterDoctor : true;
       return matchesDate && matchesSpec && matchesDoctor;
     });
 
     // Jeśli żaden filtr nie jest wybrany, lista pozostaje pusta
-    if (!this.filterDate && !this.filterSpecialization && !this.filterDoctor) {
+    if (!this.filterDate && this.filterSpecialization === 'Wybierz specjalizację' && this.filterDoctor === 'Wybierz lekarza') {
       this.filteredAppointments = [];
     }
   }
 
 
+
   resetFilters(): void {
     this.filterDate = '';
-    this.filterSpecialization = '';
-    this.filterDoctor = '';
-    this.filteredAppointments = [...this.availableAppointments];
+    this.filterSpecialization = 'Wybierz specjalizację';
+    this.filterDoctor = 'Wybierz lekarza';
+    this.filteredAppointments = [];  // Pusta lista po resecie
   }
+
 
   loadReservedAppointments(): void {
     this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability/reserved').subscribe({

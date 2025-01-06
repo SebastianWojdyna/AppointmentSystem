@@ -1,7 +1,6 @@
 <div class="container mt-4">
   <h1 class="mb-4 text-center section-title">Dostępne Wizyty</h1>
 
-  <!-- Filtry -->
   <div class="card mb-4">
     <div class="card-header">Filtruj wizyty</div>
     <div class="card-body">
@@ -22,6 +21,7 @@
             id="filterSpecialization"
             [(ngModel)]="filterSpecialization"
             (change)="applyFilters()">
+            <option value="Wybierz specjalizację" disabled selected>Wybierz specjalizację</option>
             <option value="">Wszystkie</option>
             <option *ngFor="let spec of specializations" [value]="spec">{{ spec }}</option>
           </select>
@@ -33,6 +33,7 @@
             id="filterDoctor"
             [(ngModel)]="filterDoctor"
             (change)="applyFilters()">
+            <option value="Wybierz lekarza" disabled selected>Wybierz lekarza</option>
             <option value="">Wszyscy</option>
             <option *ngFor="let doc of doctors" [value]="doc">{{ doc }}</option>
           </select>
