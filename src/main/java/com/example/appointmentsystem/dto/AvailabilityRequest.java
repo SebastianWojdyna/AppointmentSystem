@@ -17,4 +17,7 @@ public class AvailabilityRequest {
 
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
+    public LocalDateTime getAvailableTime() {
+        return availableTimes != null && !availableTimes.isEmpty() ? availableTimes.get(0) : null;
+    }
 }

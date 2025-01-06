@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -59,6 +60,26 @@ public class AvailabilityController {
         availabilityService.addDoctorAvailability(doctor, service, request.getAvailableTimes(), request.getPrice());
         return ResponseEntity.ok("Availability added successfully");
     }
+
+    @Transactional
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAvailability(@PathVariable Long id, @RequestBody AvailabilityRequest request) {
+        Availability availability = availabilityService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Availability not found"));
+
+        AppointmentServiceType service = serviceService.findById(request.getServiceId())
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+
+        availability.setService(service);
+        availability.setAvailableTime(request.getAvailableTime());
+        availability.setPrice(request.getPrice());
+        availabilityService.save(availability);
+
+        return ResponseEntity.ok("Availability updated successfully");
+    }
+
+
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteAvailability(@PathVariable Long id) {

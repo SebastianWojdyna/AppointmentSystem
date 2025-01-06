@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AvailabilityService {
@@ -28,6 +29,15 @@ public class AvailabilityService {
             availability.setSpecialization(specialization);
             availabilityRepository.save(availability);
         });
+    }
+
+    public Optional<Availability> findById(Long id) {
+        return availabilityRepository.findById(id);
+    }
+
+
+    public Availability save(Availability availability) {
+        return availabilityRepository.save(availability);
     }
 
     public List<Availability> getDoctorAvailability(Long doctorId) {

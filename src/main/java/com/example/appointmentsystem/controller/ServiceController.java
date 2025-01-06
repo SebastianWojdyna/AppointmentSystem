@@ -53,6 +53,21 @@ public class ServiceController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateService(@PathVariable Long id, @Valid @RequestBody AppointmentServiceType updatedService) {
+        Optional<AppointmentServiceType> existingService = serviceRepository.findById(id);
+
+        if (existingService.isPresent()) {
+            AppointmentServiceType service = existingService.get();
+            service.setName(updatedService.getName());
+            service.setPrice(updatedService.getPrice());
+            serviceRepository.save(service);
+            return ResponseEntity.ok("Service updated successfully");
+        } else {
+            return ResponseEntity.status(404).body("Service not found");
+        }
+    }
+
     // Endpoint usuwający usługę
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteService(@PathVariable Long id) {
