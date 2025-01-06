@@ -8,7 +8,11 @@ import { HttpClient } from '@angular/common/http';
 })
 export class PatientDashboardComponent implements OnInit {
   availableAppointments: any[] = [];
+  filteredAppointments: any[] = [];
   reservedAppointments: any[] = [];
+  specializations: string[] = [];
+  filterDate: string = '';
+  filterSpecialization: string = '';
   successMessage: string = '';
   errorMessage: string = '';
 
@@ -28,11 +32,26 @@ export class PatientDashboardComponent implements OnInit {
             ...appt,
             availableTime: this.parseDate(appt.availableTime)
           }));
+        this.filteredAppointments = [...this.availableAppointments];
+        this.extractSpecializations();
       },
       error: (err) => {
         this.errorMessage = 'Nie udało się pobrać dostępnych wizyt.';
         console.error('Failed to load appointments:', err);
       }
+    });
+  }
+
+  extractSpecializations(): void {
+    const specs = new Set(this.availableAppointments.map(appt => appt.specialization));
+    this.specializations = Array.from(specs);
+  }
+
+  applyFilters(): void {
+    this.filteredAppointments = this.availableAppointments.filter(appt => {
+      const matchesDate = this.filterDate ? appt.availableTime.startsWith(this.filterDate) : true;
+      const matchesSpec = this.filterSpecialization ? appt.specialization === this.filterSpecialization : true;
+      return matchesDate && matchesSpec;
     });
   }
 

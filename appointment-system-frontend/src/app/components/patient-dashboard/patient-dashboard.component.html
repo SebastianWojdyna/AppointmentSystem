@@ -1,6 +1,26 @@
 <div class="container mt-4">
   <h1 class="mb-4 text-center section-title">Dostępne Wizyty</h1>
 
+  <!-- Filtry -->
+  <div class="card mb-4">
+    <div class="card-header">Filtruj wizyty</div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="filterDate">Data</label>
+          <input type="date" class="form-control" id="filterDate" [(ngModel)]="filterDate" (change)="applyFilters()">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="filterSpecialization">Specjalizacja</label>
+          <select class="form-control" id="filterSpecialization" [(ngModel)]="filterSpecialization" (change)="applyFilters()">
+            <option value="">Wszystkie</option>
+            <option *ngFor="let spec of specializations" [value]="spec">{{ spec }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
   <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
