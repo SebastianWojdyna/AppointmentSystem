@@ -66,15 +66,12 @@ export class PatientDashboardComponent implements OnInit {
     }
   }
 
-
-
   resetFilters(): void {
     this.filterDate = '';
     this.filterSpecialization = 'Wybierz specjalizację';
     this.filterDoctor = 'Wybierz lekarza';
     this.filteredAppointments = [];  // Pusta lista po resecie
   }
-
 
   loadReservedAppointments(): void {
     this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability/reserved').subscribe({
@@ -90,7 +87,6 @@ export class PatientDashboardComponent implements OnInit {
       }
     });
   }
-
 
   bookAppointment(availabilityId: number): void {
     this.http.post(`https://appointment-system-backend.azurewebsites.net/api/availability/book/${availabilityId}`, null).subscribe({

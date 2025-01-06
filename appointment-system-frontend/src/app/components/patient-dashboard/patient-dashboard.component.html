@@ -1,8 +1,9 @@
 <div class="container mt-4">
   <h1 class="mb-4 text-center section-title">Dostępne Wizyty</h1>
 
+  <!-- Filtry -->
   <div class="card mb-4">
-    <div class="card-header">Filtruj wizyty</div>
+    <div class="card-header">Wyszukaj dostępne wizyty</div>
     <div class="card-body">
       <div class="form-row">
         <div class="form-group col-md-3">
@@ -22,7 +23,6 @@
             [(ngModel)]="filterSpecialization"
             (change)="applyFilters()">
             <option value="Wybierz specjalizację" disabled selected>Wybierz specjalizację</option>
-            <option value="">Wszystkie</option>
             <option *ngFor="let spec of specializations" [value]="spec">{{ spec }}</option>
           </select>
         </div>
@@ -34,12 +34,11 @@
             [(ngModel)]="filterDoctor"
             (change)="applyFilters()">
             <option value="Wybierz lekarza" disabled selected>Wybierz lekarza</option>
-            <option value="">Wszyscy</option>
             <option *ngFor="let doc of doctors" [value]="doc">{{ doc }}</option>
           </select>
         </div>
         <div class="form-group col-md-3 d-flex align-items-end">
-          <button class="btn btn-outline-primary btn-block" (click)="applyFilters()">Filtruj</button>
+          <button class="btn btn-outline-primary btn-block" (click)="applyFilters()">Szukaj</button>
           <button class="btn btn-outline-secondary btn-block ml-2" (click)="resetFilters()">Resetuj</button>
         </div>
       </div>
