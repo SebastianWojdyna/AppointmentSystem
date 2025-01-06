@@ -31,11 +31,13 @@
         <div class="form-row">
           <div class="form-group col-md-6">
             <label>Usługa</label>
-            <input type="text" class="form-control" [(ngModel)]="editingAvailability.service.name" disabled>
+            <input type="text" class="form-control" [(ngModel)]="editingAvailability.service.name" readonly>
+
           </div>
           <div class="form-group col-md-6">
             <label>Data i godzina</label>
             <input type="datetime-local" class="form-control" [(ngModel)]="editingAvailability.availableTime" required>
+
           </div>
         </div>
         <button type="submit" class="btn btn-outline-primary">Zapisz zmiany</button>
