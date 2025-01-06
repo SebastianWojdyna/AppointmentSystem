@@ -51,3 +51,56 @@ form {
 .ml-auto {
   margin-left: auto;
 }
+
+/* Nawigacja - centrum dla opcji Zarezerwuj i Zarezerwowane */
+.navbar-nav .nav-link {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  padding: 10px 25px;
+  transition: color 0.3s ease, background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  border-radius: 25px;
+}
+
+.navbar-nav .nav-link i {
+  margin-right: 8px;
+  font-size: 1.3rem;
+}
+
+/* Wyróżnienie dla "Zarezerwuj" */
+.nav-reserve {
+  background-color: #007bff;
+  color: white;
+}
+
+.nav-reserve:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+/* Wyróżnienie dla "Zarezerwowane" */
+.nav-reserved {
+  background-color: #28a745;
+  color: white;
+}
+
+.nav-reserved:hover {
+  background-color: #218838;
+  color: white;
+}
+
+/* Wyloguj w prawym rogu */
+.btn-logout {
+  margin-left: 20px;
+  padding: 8px 25px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.btn-logout i {
+  margin-right: 8px;
+  font-size: 1.2rem;
+}
