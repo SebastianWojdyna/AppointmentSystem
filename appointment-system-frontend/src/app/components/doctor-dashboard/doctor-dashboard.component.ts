@@ -157,8 +157,11 @@ export class DoctorDashboardComponent implements OnInit {
         this.loadAvailableServices();
       },
       error: (err) => {
-        this.errorMessage = 'Nie udało się usunąć usługi.';
-        console.error(err);
+        if (err.error && err.error.error) {
+          this.errorMessage = err.error.error;
+        } else {
+          this.errorMessage = 'Nie udało się usunąć usługi ponieważ jest ona użyta w twoich dostępnościach..';
+        }
       }
     });
   }
