@@ -89,6 +89,21 @@ export class PatientDashboardComponent implements OnInit {
     });
   }
 
+
+  bookAppointment(availabilityId: number): void {
+    this.http.post(`https://appointment-system-backend.azurewebsites.net/api/availability/book/${availabilityId}`, null).subscribe({
+      next: () => {
+        this.successMessage = 'Wizyta została zarezerwowana!';
+        this.loadAvailableAppointments();
+        this.loadReservedAppointments();
+      },
+      error: (err) => {
+        this.errorMessage = 'Nie udało się zarezerwować wizyty.';
+        console.error(err);
+      }
+    });
+  }
+
   parseDate(rawDate: any): string | null {
     try {
       if (!rawDate) return null;
@@ -100,7 +115,7 @@ export class PatientDashboardComponent implements OnInit {
     }
   }
 
-cancelAppointment(availabilityId: number): void {
+  cancelAppointment(availabilityId: number): void {
     this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/availability/cancel/${availabilityId}`).subscribe({
       next: () => {
         this.successMessage = "Rezerwacja została anulowana!";
