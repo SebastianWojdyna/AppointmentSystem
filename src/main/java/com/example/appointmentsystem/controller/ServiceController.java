@@ -47,4 +47,18 @@ public class ServiceController {
         response.put("service", savedService);
         return ResponseEntity.ok(response);
     }
+
+    // Endpoint usuwający usługę
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteService(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
+        if (serviceRepository.existsById(id)) {
+            serviceRepository.deleteById(id);
+            response.put("message", "Service deleted successfully");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("error", "Service not found");
+            return ResponseEntity.status(404).body(response);
+        }
+    }
 }
