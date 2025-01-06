@@ -35,7 +35,6 @@ export class PatientDashboardComponent implements OnInit {
             ...appt,
             availableTime: this.parseDate(appt.availableTime)
           }));
-        this.filteredAppointments = [...this.availableAppointments];
         this.extractFilters();
       },
       error: (err) => {
@@ -61,11 +60,12 @@ export class PatientDashboardComponent implements OnInit {
       return matchesDate && matchesSpec && matchesDoctor;
     });
 
-    // Jeśli żaden filtr nie jest wybrany, pokaż wszystkie
+    // Jeśli żaden filtr nie jest wybrany, lista pozostaje pusta
     if (!this.filterDate && !this.filterSpecialization && !this.filterDoctor) {
-      this.filteredAppointments = [...this.availableAppointments];
+      this.filteredAppointments = [];
     }
   }
+
 
   resetFilters(): void {
     this.filterDate = '';
