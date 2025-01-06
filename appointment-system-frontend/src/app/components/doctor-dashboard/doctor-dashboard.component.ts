@@ -171,11 +171,20 @@ export class DoctorDashboardComponent implements OnInit {
         this.successMessage = 'Usługa została zaktualizowana.';
         this.editingService = null;
         this.loadAvailableServices();
+        this.resetMessages();
       },
       error: (err) => {
         this.errorMessage = 'Nie udało się zaktualizować usługi.';
+        this.resetMessages();
       }
     });
+  }
+
+  resetMessages(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+      this.errorMessage = '';
+    }, 3000);  // Komunikat znika po 3 sekundach
   }
 
   deleteService(serviceId: number): void {
