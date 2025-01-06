@@ -14,10 +14,6 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ml-auto">
-      <!-- Wyświetl "Wyloguj" dla zalogowanych użytkowników -->
-      <li class="nav-item" *ngIf="isLoggedIn">
-        <button class="btn btn-outline-danger" (click)="logout()">Wyloguj</button>
-      </li>
       <!-- Opcja "Zarezerwuj wizytę" -->
       <li class="nav-item" *ngIf="isLoggedIn">
         <a class="nav-link nav-reserve" routerLink="/patient-dashboard">
@@ -29,6 +25,10 @@
         <a class="nav-link nav-reserved" routerLink="/reserved-appointments">
           <i class="fas fa-list-ul"></i> Zarezerwowane
         </a>
+      </li>
+      <!-- Wyświetl "Wyloguj" dla zalogowanych użytkowników -->
+      <li class="nav-item" *ngIf="isLoggedIn">
+        <button class="btn btn-outline-danger" (click)="logout()">Wyloguj</button>
       </li>
       <!-- Wyświetl "Zaloguj" i "Zarejestruj się" dla niezalogowanych użytkowników -->
       <li class="nav-item" *ngIf="!isLoggedIn">
