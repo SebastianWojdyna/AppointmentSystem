@@ -2,6 +2,7 @@ package com.example.appointmentsystem.controller;
 
 import com.example.appointmentsystem.model.AppointmentServiceType;
 import com.example.appointmentsystem.repository.AppointmentServiceTypeRepository;
+import com.example.appointmentsystem.repository.AvailabilityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -11,6 +12,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/services")
@@ -18,10 +20,13 @@ import java.util.Map;
 public class ServiceController {
 
     private final AppointmentServiceTypeRepository serviceRepository;
+    private final AvailabilityRepository availabilityRepository;
 
     @Autowired
-    public ServiceController(AppointmentServiceTypeRepository serviceRepository) {
+    public ServiceController(AppointmentServiceTypeRepository serviceRepository,
+                             AvailabilityRepository availabilityRepository) {
         this.serviceRepository = serviceRepository;
+        this.availabilityRepository = availabilityRepository;
     }
 
     // Endpoint pobierający wszystkie usługi
@@ -52,12 +57,20 @@ public class ServiceController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteService(@PathVariable Long id) {
         Map<String, String> response = new HashMap<>();
-        if (serviceRepository.existsById(id)) {
+        Optional<AppointmentServiceType> service = serviceRepository.findById(id);
+
+        if (service.isPresent()) {
+            // Sprawdzenie, czy istnieją dostępności powiązane z tą usługą
+            if (!availabilityRepository.findByServiceId(id).isEmpty()) {
+                response.put("error", "Nie można usunąć usługi, ponieważ są z nią powiązane dostępności.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
             serviceRepository.deleteById(id);
-            response.put("message", "Service deleted successfully");
+            response.put("message", "Usługa została pomyślnie usunięta.");
             return ResponseEntity.ok(response);
         } else {
-            response.put("error", "Service not found");
+            response.put("error", "Usługa nie została znaleziona.");
             return ResponseEntity.status(404).body(response);
         }
     }
