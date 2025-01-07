@@ -1,16 +1,17 @@
 <!-- Pasek nawigacyjny -->
-<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #f0f0f0; position: relative;">
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #f0f0f0;">
   <div class="container-fluid">
     <a class="navbar-brand font-weight-bold" href="/home">System Rezerwacji Wizyt</a>
 
-    <!-- Przycisk "Zarezerwuj" i "Zarezerwowane" na środku paska -->
-    <div class="position-absolute w-100 text-center">
+    <div class="position-absolute w-100 text-center" id="navbarNav">
       <ul class="navbar-nav d-inline-flex">
+        <!-- Opcja "Zarezerwuj wizytę" -->
         <li class="nav-item mx-3" *ngIf="isLoggedIn">
           <a class="nav-link text-primary font-weight-bold" routerLink="/reserve">
             <i class="fas fa-calendar-plus"></i> Zarezerwuj
           </a>
         </li>
+        <!-- Opcja "Zarezerwowane wizyty" -->
         <li class="nav-item mx-3" *ngIf="isLoggedIn">
           <a class="nav-link text-success font-weight-bold" routerLink="/reserved">
             <i class="fas fa-list-ul"></i> Zarezerwowane
@@ -19,11 +20,12 @@
       </ul>
     </div>
 
-    <!-- Przyciski po prawej (Wyloguj) -->
     <ul class="navbar-nav ml-auto">
+      <!-- Wyświetl "Wyloguj" dla zalogowanych użytkowników -->
       <li class="nav-item" *ngIf="isLoggedIn">
         <button class="btn btn-outline-danger" (click)="logout()">Wyloguj</button>
       </li>
+      <!-- Wyświetl "Zaloguj" i "Zarejestruj się" dla niezalogowanych użytkowników -->
       <li class="nav-item" *ngIf="!isLoggedIn">
         <button class="btn btn-outline-primary mr-2" (click)="navigateToLogin()">
           Zaloguj
