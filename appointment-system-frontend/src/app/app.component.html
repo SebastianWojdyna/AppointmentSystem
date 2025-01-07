@@ -13,18 +13,14 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav ml-auto">
+    <ul class="nav nav-pills nav-fill">
       <!-- Opcja "Zarezerwuj wizytę" -->
       <li class="nav-item" *ngIf="isLoggedIn">
-        <a class="nav-link nav-reserve" routerLink="/patient-dashboard">
-          <i class="fas fa-calendar-plus"></i> Zarezerwuj
-        </a>
+        <a class="nav-link active" routerLink="/reserve">Zarezerwuj</a>
       </li>
       <!-- Opcja "Zarezerwowane wizyty" -->
       <li class="nav-item" *ngIf="isLoggedIn">
-        <a class="nav-link nav-reserved" routerLink="/reserved-appointments">
-          <i class="fas fa-list-ul"></i> Zarezerwowane
-        </a>
+        <a class="nav-link active" routerLink="/reserved">Zarezerwowane</a>
       </li>
       <!-- Wyświetl "Wyloguj" dla zalogowanych użytkowników -->
       <li class="nav-item" *ngIf="isLoggedIn">
