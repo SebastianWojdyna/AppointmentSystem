@@ -1,27 +1,26 @@
 <!-- Pasek nawigacyjny -->
 <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #f0f0f0;">
-  <a class="navbar-brand font-weight-bold" href="/home">System Rezerwacji Wizyt</a>
-  <button
-    class="navbar-toggler"
-    type="button"
-    data-toggle="collapse"
-    data-target="#navbarNav"
-    aria-controls="navbarNav"
-    aria-expanded="false"
-    aria-label="Toggle navigation"
-  >
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
+  <div class="container-fluid">
+    <a class="navbar-brand font-weight-bold" href="/home">System Rezerwacji Wizyt</a>
+
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <ul class="navbar-nav">
+        <!-- Opcja "Zarezerwuj wizytę" -->
+        <li class="nav-item mx-3" *ngIf="isLoggedIn">
+          <a class="nav-link text-primary font-weight-bold" routerLink="/reserve">
+            <i class="fas fa-calendar-plus"></i> Zarezerwuj
+          </a>
+        </li>
+        <!-- Opcja "Zarezerwowane wizyty" -->
+        <li class="nav-item mx-3" *ngIf="isLoggedIn">
+          <a class="nav-link text-success font-weight-bold" routerLink="/reserved">
+            <i class="fas fa-list-ul"></i> Zarezerwowane
+          </a>
+        </li>
+      </ul>
+    </div>
+
     <ul class="navbar-nav ml-auto">
-      <!-- Opcja "Zarezerwuj wizytę" -->
-      <li class="nav-item" *ngIf="isLoggedIn">
-        <a class="nav-link active" routerLink="/reserve">Zarezerwuj</a>
-      </li>
-      <!-- Opcja "Zarezerwowane wizyty" -->
-      <li class="nav-item" *ngIf="isLoggedIn">
-        <a class="nav-link active" routerLink="/reserved">Zarezerwowane</a>
-      </li>
       <!-- Wyświetl "Wyloguj" dla zalogowanych użytkowników -->
       <li class="nav-item" *ngIf="isLoggedIn">
         <button class="btn btn-outline-danger" (click)="logout()">Wyloguj</button>
