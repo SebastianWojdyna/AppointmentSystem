@@ -20,6 +20,7 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { AuthInterceptor } from './auth.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ReservedAppointmentsComponent } from './components/reserved-appointments/reserved-appointments.component';
+import { HelpComponent } from './components/help/help.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { ReservedAppointmentsComponent } from './components/reserved-appointment
     DoctorDashboardComponent,
     ReceptionistDashboardComponent,
     PatientDashboardComponent,
-    ReservedAppointmentsComponent
+    ReservedAppointmentsComponent,
+    HelpComponent
   ],
   imports: [
     BrowserModule,

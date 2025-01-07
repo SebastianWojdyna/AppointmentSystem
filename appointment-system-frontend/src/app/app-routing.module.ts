@@ -10,6 +10,7 @@ import { ReceptionistDashboardComponent } from './components/receptionist-dashbo
 import { PatientDashboardComponent } from './components/patient-dashboard/patient-dashboard.component';
 import { AuthGuard } from './auth.guard';
 import { ReservedAppointmentsComponent } from './components/reserved-appointments/reserved-appointments.component';
+import { HelpComponent } from './components/help/help.component';
 
 const routes: Routes = [
   { path: 'reserve', component: PatientDashboardComponent },  // Zarezerwuj wizytę
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'help', component: HelpComponent },
   {
     path: 'home',
     component: HomeComponent,

@@ -17,6 +17,12 @@
             <i class="fas fa-list-ul"></i> Zarezerwowane
           </a>
         </li>
+        <!-- Opcja "Pomoc" -->
+        <li class="nav-item mx-3" *ngIf="isLoggedIn">
+          <a class="nav-link text-info font-weight-bold" routerLink="/help">
+            <i class="fas fa-question-circle"></i> Pomoc
+          </a>
+        </li>
       </ul>
     </div>
 
