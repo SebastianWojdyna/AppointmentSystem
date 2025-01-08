@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-doctor-dashboard',
@@ -14,6 +15,7 @@ export class DoctorDashboardComponent implements OnInit {
   selectedDateTime: string = '';
   price: number = 0;
   currentDoctorId: number | null = null;
+  selectedPatientDetails: any = null;
 
   newServiceName: string = '';
   newServicePrice: number | null = null;
@@ -24,7 +26,7 @@ export class DoctorDashboardComponent implements OnInit {
   editingAvailability: any = null;  // Dostępność do edycji
   editingService: any = null;       // Usługa do edycji
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private modalService: NgbModal) {}
 
   ngOnInit(): void {
     this.loadDoctorData();
@@ -66,15 +68,20 @@ export class DoctorDashboardComponent implements OnInit {
               availableTime: this.parseDate(avail.availableTime),
               price: avail.price || 0,
               specialization: avail.specialization || 'Brak specjalizacji',
-              isBooked: avail.isBooked || false
+              isBooked: avail.isBooked || false,
+              patientDetails: avail.patientDetails || null
             }));
           },
           error: (err) => {
-            this.errorMessage = 'Nie udało się pobrać dostępności.';
-            console.error(err);
+            console.error('Nie udało się pobrać dostępności.', err);
           }
         });
     }
+  }
+
+  openPatientDetailsModal(content: any, patientDetails: any): void {
+    this.selectedPatientDetails = patientDetails;
+    this.modalService.open(content, { size: 'lg' });
   }
 
   parseDate(rawDate: any): string | null {

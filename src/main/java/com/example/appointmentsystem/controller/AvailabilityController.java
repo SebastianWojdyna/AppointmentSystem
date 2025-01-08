@@ -222,4 +222,29 @@ public class AvailabilityController {
         return ResponseEntity.ok(Collections.singletonMap("message", "Patient details updated successfully."));
     }
 
+    @GetMapping("/patient-details/{availabilityId}")
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
+    public ResponseEntity<PatientDetailsDto> getPatientDetailsByAvailabilityId(@PathVariable Long availabilityId) {
+        Availability availability = availabilityService.findById(availabilityId)
+                .orElseThrow(() -> new RuntimeException("Availability not found"));
+
+        // Sprawdź, czy są powiązane dane pacjenta
+        if (availability.getPatientDetails() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        PatientDetails patientDetails = availability.getPatientDetails();
+        PatientDetailsDto dto = new PatientDetailsDto(
+                patientDetails.getFirstName(),
+                patientDetails.getLastName(),
+                patientDetails.getPesel(),
+                patientDetails.getGender(),
+                patientDetails.getBirthDate(),
+                patientDetails.getSymptoms(),
+                availabilityId
+        );
+
+        return ResponseEntity.ok(dto);
+    }
+
 }

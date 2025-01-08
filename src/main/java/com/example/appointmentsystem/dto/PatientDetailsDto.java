@@ -26,6 +26,21 @@ public class PatientDetailsDto {
     @Size(max = 1000, message = "Opis objawów nie może przekraczać 1000 znaków.")
     private String symptoms;
 
+    public PatientDetailsDto(String firstName, String lastName, String pesel, String gender, LocalDate birthDate, String symptoms, Long availabilityId) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.pesel = pesel;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.symptoms = symptoms;
+        this.availabilityId = availabilityId;
+    }
+
+    public PatientDetailsDto() {
+        // Domyślny pusty konstruktor
+    }
+
+
     // Gettery i settery
     public Long getAvailabilityId() { return availabilityId; }
     public void setAvailabilityId(Long availabilityId) { this.availabilityId = availabilityId; }

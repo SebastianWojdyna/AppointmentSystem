@@ -56,6 +56,7 @@
           <th>Cena</th>
           <th>Specjalizacja</th>
           <th>Status</th>
+          <th>Dane pacjenta</th>
           <th>Akcje</th>
         </tr>
         </thead>
@@ -75,19 +76,22 @@
             </span>
           </td>
           <td>
+            <button
+              *ngIf="avail?.isBooked && avail.patientDetails"
+              class="btn btn-outline-info btn-sm"
+              (click)="openPatientDetailsModal(patientDetailsModal, avail.patientDetails)">
+              Wyświetl
+            </button>
+            <span *ngIf="!avail?.isBooked">-</span>
+          </td>
+          <td>
             <button class="btn btn-outline-danger btn-sm" (click)="deleteAvailability(avail.id)">
               Usuń
-            </button>
-            <button class="btn btn-outline-primary btn-sm ml-2" (click)="editAvailability(avail)">
-              Edytuj
             </button>
           </td>
         </tr>
         </tbody>
       </table>
-      <div *ngIf="availability.length === 0" class="text-center text-muted mt-3">
-        Brak dostępnych terminów.
-      </div>
     </div>
   </div>
 
@@ -125,6 +129,28 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal do wyświetlania danych pacjenta -->
+  <ng-template #patientDetailsModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Dane Pacjenta</h5>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body" *ngIf="selectedPatientDetails">
+      <p><strong>Imię:</strong> {{ selectedPatientDetails.firstName }}</p>
+      <p><strong>Nazwisko:</strong> {{ selectedPatientDetails.lastName }}</p>
+      <p><strong>PESEL:</strong> {{ selectedPatientDetails.pesel }}</p>
+      <p><strong>Płeć:</strong> {{ selectedPatientDetails.gender }}</p>
+      <p><strong>Data urodzenia:</strong> {{ selectedPatientDetails.birthDate }}</p>
+      <p><strong>Objawy:</strong> {{ selectedPatientDetails.symptoms }}</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.close()">Zamknij</button>
+    </div>
+  </ng-template>
+</div>
 
   <!-- Komunikaty -->
   <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
