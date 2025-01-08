@@ -4,9 +4,12 @@ import com.example.appointmentsystem.model.Availability;
 import com.example.appointmentsystem.model.Doctor;
 import com.example.appointmentsystem.model.AppointmentServiceType;
 import com.example.appointmentsystem.model.User;
+import com.example.appointmentsystem.model.PatientDetails;
 import com.example.appointmentsystem.repository.AvailabilityRepository;
+import com.example.appointmentsystem.repository.PatientDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +21,9 @@ public class AvailabilityService {
 
     @Autowired
     private AvailabilityRepository availabilityRepository;
+
+    @Autowired
+    private PatientDetailsRepository patientDetailsRepository;
 
     public void addDoctorAvailability(Doctor doctor, AppointmentServiceType service, List<LocalDateTime> times, double price) {
         String specialization = doctor.getSpecialization();
@@ -54,6 +60,30 @@ public class AvailabilityService {
     }
 
     // Rezerwacja wizyty
+    @Transactional
+    public void bookAppointment(Long availabilityId, User patient, PatientDetails details) {
+        Availability availability = availabilityRepository.findById(availabilityId)
+                .orElseThrow(() -> new RuntimeException("Availability not found"));
+
+        if (availability.getIsBooked()) {
+            throw new RuntimeException("This appointment is already booked");
+        }
+
+        // Sprawdzenie, czy dane pacjenta są kompletne
+        validatePatientDetails(details);
+
+        availability.setIsBooked(true);
+        availability.setPatient(patient);
+
+        // Przypisanie dostępności do danych pacjenta
+        details.setAvailability(availability);
+        patientDetailsRepository.save(details);
+
+        // Zapis dostępności z przypisanym pacjentem
+        availabilityRepository.save(availability);
+    }
+
+    // Rezerwacja wizyty bez ankiety (tylko dla istniejących pacjentów)
     public void bookAppointment(Long availabilityId, User patient) {
         Availability availability = availabilityRepository.findById(availabilityId)
                 .orElseThrow(() -> new RuntimeException("Availability not found"));
@@ -71,13 +101,17 @@ public class AvailabilityService {
         return availabilityRepository.findByPatientId(patientId);
     }
 
-    public void cancelAppointment(Long availabilityId, User patient){
+    @Transactional
+    public void cancelAppointment(Long availabilityId, User patient) {
         Availability availability = availabilityRepository.findById(availabilityId)
                 .orElseThrow(() -> new RuntimeException("Availability not found"));
 
         if (!availability.getIsBooked() || !availability.getPatient().getId().equals(patient.getId())) {
             throw new RuntimeException("Nie możesz anulować tej rezerwacji.");
         }
+
+        // Usunięcie powiązanych danych pacjenta
+        patientDetailsRepository.deleteByAvailabilityId(availability.getId());
 
         availability.setIsBooked(false);
         availability.setPatient(null);
@@ -89,6 +123,24 @@ public class AvailabilityService {
                 .filter(a -> (date == null || a.getAvailableTime().toLocalDate().toString().equals(date)))
                 .filter(a -> (specialization == null || a.getSpecialization().equalsIgnoreCase(specialization)))
                 .collect(Collectors.toList());
+    }
+
+    private void validatePatientDetails(PatientDetails details) {
+        if (details.getFirstName() == null || details.getFirstName().isEmpty()) {
+            throw new RuntimeException("First name is required");
+        }
+        if (details.getLastName() == null || details.getLastName().isEmpty()) {
+            throw new RuntimeException("Last name is required");
+        }
+        if (details.getPesel() == null || details.getPesel().isEmpty()) {
+            throw new RuntimeException("PESEL is required");
+        }
+        if (details.getGender() == null || details.getGender().isEmpty()) {
+            throw new RuntimeException("Gender is required");
+        }
+        if (details.getBirthDate() == null) {
+            throw new RuntimeException("Birth date is required");
+        }
     }
 
 }

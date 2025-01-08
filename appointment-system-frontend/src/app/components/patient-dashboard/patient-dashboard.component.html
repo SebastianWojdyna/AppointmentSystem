@@ -48,6 +48,55 @@
   <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
   <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
+  <!-- Modal do wypełnienia danych pacjenta -->
+  <div class="modal fade" id="patientDetailsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Wypełnij dane pacjenta</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Zamknij">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form #patientForm="ngForm">
+            <div class="form-group">
+              <label for="firstName">Imię</label>
+              <input type="text" class="form-control" id="firstName" [(ngModel)]="patientDetails.firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+              <label for="lastName">Nazwisko</label>
+              <input type="text" class="form-control" id="lastName" [(ngModel)]="patientDetails.lastName" name="lastName" required>
+            </div>
+            <div class="form-group">
+              <label for="pesel">PESEL</label>
+              <input type="text" class="form-control" id="pesel" [(ngModel)]="patientDetails.pesel" name="pesel" required pattern="\\d{11}">
+            </div>
+            <div class="form-group">
+              <label for="gender">Płeć</label>
+              <select class="form-control" id="gender" [(ngModel)]="patientDetails.gender" name="gender" required>
+                <option value="Mężczyzna">Mężczyzna</option>
+                <option value="Kobieta">Kobieta</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="birthDate">Data urodzenia</label>
+              <input type="date" class="form-control" id="birthDate" [(ngModel)]="patientDetails.birthDate" name="birthDate" required>
+            </div>
+            <div class="form-group">
+              <label for="symptoms">Objawy</label>
+              <textarea class="form-control" id="symptoms" [(ngModel)]="patientDetails.symptoms" name="symptoms" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
+          <button type="button" class="btn btn-primary" (click)="confirmBooking()">Zarezerwuj</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Tabela dostępnych wizyt -->
   <table class="table table-striped table-bordered text-center">
     <thead>
@@ -68,7 +117,7 @@
       <td>{{ appt.price }} zł</td>
       <td>{{ appt.doctor.name }}</td>
       <td>
-        <button class="btn btn-outline-success btn-sm" (click)="bookAppointment(appt.id)">
+        <button class="btn btn-outline-success btn-sm" (click)="openPatientForm(appt.id)">
           Zarezerwuj
         </button>
       </td>

@@ -1,10 +1,12 @@
 package com.example.appointmentsystem.controller;
 
 import com.example.appointmentsystem.dto.AvailabilityRequest;
+import com.example.appointmentsystem.dto.PatientDetailsDto;
 import com.example.appointmentsystem.model.Availability;
 import com.example.appointmentsystem.model.Doctor;
 import com.example.appointmentsystem.model.AppointmentServiceType;
 import com.example.appointmentsystem.model.User;
+import com.example.appointmentsystem.model.PatientDetails;
 import com.example.appointmentsystem.repository.AvailabilityRepository;
 import com.example.appointmentsystem.service.AvailabilityService;
 import com.example.appointmentsystem.service.DoctorService;
@@ -79,8 +81,6 @@ public class AvailabilityController {
     }
 
 
-
-
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteAvailability(@PathVariable Long id) {
         if (!availabilityRepository.existsById(id)) {
@@ -100,6 +100,38 @@ public class AvailabilityController {
 
         availabilityService.bookAppointment(id, patient);
         return ResponseEntity.ok(Collections.singletonMap("message", "Wizyta została zarezerwowana"));
+    }
+
+    // Rezerwacja z danymi pacjenta (ankieta)
+    @PostMapping("/book-with-details")
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
+    public ResponseEntity<?> bookAppointmentWithDetails(
+            @RequestBody PatientDetailsDto detailsDto,
+            Authentication authentication) {
+
+        String username = authentication.getName();
+        User patient = userService.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+
+        Availability availability = availabilityService.findById(detailsDto.getAvailabilityId())
+                .orElseThrow(() -> new RuntimeException("Availability not found"));
+
+        if (availability.getIsBooked()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Appointment is already booked."));
+        }
+
+        // Tworzenie obiektu PatientDetails
+        PatientDetails details = new PatientDetails();
+        details.setFirstName(detailsDto.getFirstName());
+        details.setLastName(detailsDto.getLastName());
+        details.setPesel(detailsDto.getPesel());
+        details.setGender(detailsDto.getGender());
+        details.setBirthDate(detailsDto.getBirthDate());
+        details.setSymptoms(detailsDto.getSymptoms());
+
+        availabilityService.bookAppointment(detailsDto.getAvailabilityId(), patient, details);
+
+        return ResponseEntity.ok(Collections.singletonMap("message", "Wizyta została zarezerwowana z danymi pacjenta."));
     }
 
     // Pobranie dostępności dla lekarza

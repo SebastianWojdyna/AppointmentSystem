@@ -29,6 +29,9 @@ public class Availability {
     @Column(nullable = false)
     private boolean isBooked = false;
 
+    @OneToOne(mappedBy = "availability", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private PatientDetails patientDetails;
+
     @PrePersist
     @PreUpdate
     private void syncPriceWithService() {
@@ -65,4 +68,7 @@ public class Availability {
 
     public boolean getIsBooked() { return isBooked; }
     public void setIsBooked(boolean isBooked) { this.isBooked = isBooked; }
+
+    public PatientDetails getPatientDetails() { return patientDetails; }
+    public void setPatientDetails(PatientDetails patientDetails) { this.patientDetails = patientDetails; }
 }

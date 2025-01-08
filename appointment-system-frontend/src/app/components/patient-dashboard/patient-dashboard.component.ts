@@ -16,12 +16,63 @@ export class PatientDashboardComponent implements OnInit {
   filterDoctor: string = 'Wybierz lekarza';
   successMessage: string = '';
   errorMessage: string = '';
+  selectedAppointmentId: number | null = null;
+
+  patientDetails = {
+    firstName: '',
+    lastName: '',
+    pesel: '',
+    gender: 'Mężczyzna',
+    birthDate: '',
+    symptoms: ''
+  };
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.loadAvailableAppointments();
     this.filteredAppointments = [];  // Początkowo lista pusta
+  }
+
+  openPatientForm(availabilityId: number): void {
+    this.selectedAppointmentId = availabilityId;
+    this.resetForm();
+    $('#patientDetailsModal').modal('show');
+  }
+
+  confirmBooking(): void {
+    if (this.selectedAppointmentId) {
+      const bookingRequest = {
+        availabilityId: this.selectedAppointmentId,
+        ...this.patientDetails
+      };
+
+      this.http.post(
+        'https://appointment-system-backend.azurewebsites.net/api/availability/book-with-details',
+        bookingRequest
+      ).subscribe({
+        next: () => {
+          this.successMessage = 'Wizyta została zarezerwowana!';
+          $('#patientDetailsModal').modal('hide');
+          this.loadAvailableAppointments();
+        },
+        error: (err) => {
+          this.errorMessage = 'Nie udało się zarezerwować wizyty.';
+          console.error(err);
+        }
+      });
+    }
+  }
+
+  resetForm(): void {
+    this.patientDetails = {
+      firstName: '',
+      lastName: '',
+      pesel: '',
+      gender: 'Mężczyzna',
+      birthDate: '',
+      symptoms: ''
+    };
   }
 
   loadAvailableAppointments(): void {
