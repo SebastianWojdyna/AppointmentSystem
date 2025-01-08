@@ -42,7 +42,7 @@ export class ReservedAppointmentsComponent implements OnInit {
 
   savePatientDetails(): void {
     if (this.selectedPatientDetails) {
-      this.http.put(`https://appointment-system-backend.azurewebsites.net/api/patient-details/${this.selectedPatientDetails.availabilityId}`, this.selectedPatientDetails)
+      this.http.put(`https://appointment-system-backend.azurewebsites.net/api/availability/patient-details/${this.selectedPatientDetails.availabilityId}`, this.selectedPatientDetails)
         .subscribe({
           next: () => {
             this.successMessage = 'Dane pacjenta zostały zaktualizowane!';
