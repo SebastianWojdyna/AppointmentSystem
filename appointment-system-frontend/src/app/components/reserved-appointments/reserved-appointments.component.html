@@ -9,6 +9,7 @@
       <th>Data i Godzina</th>
       <th>Cena</th>
       <th>Lekarz</th>
+      <th>Dane Pacjenta</th>
       <th>Akcja</th>
     </tr>
     </thead>
@@ -21,6 +22,15 @@
       <td>{{ appt.doctor.name }}</td>
       <td>
         <button
+          *ngIf="appt.patientDetails"
+          class="btn btn-outline-primary btn-sm"
+          (click)="openPatientDetailsModal(patientModal, appt.patientDetails)">
+          Wyświetl
+        </button>
+        <span *ngIf="!appt.patientDetails">Brak danych</span>
+      </td>
+      <td>
+        <button
           *ngIf="appt.isBooked"
           class="btn btn-outline-danger btn-sm"
           (click)="cancelAppointment(appt.id)">
@@ -31,3 +41,39 @@
     </tbody>
   </table>
 </div>
+
+<!-- Modal -->
+<ng-template #patientModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Dane Pacjenta</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form *ngIf="selectedPatientDetails">
+      <div class="mb-3">
+        <label for="firstName" class="form-label">Imię</label>
+        <input type="text" class="form-control" id="firstName" [(ngModel)]="selectedPatientDetails.firstName" name="firstName">
+      </div>
+      <div class="mb-3">
+        <label for="lastName" class="form-label">Nazwisko</label>
+        <input type="text" class="form-control" id="lastName" [(ngModel)]="selectedPatientDetails.lastName" name="lastName">
+      </div>
+      <div class="mb-3">
+        <label for="pesel" class="form-label">PESEL</label>
+        <input type="text" class="form-control" id="pesel" [(ngModel)]="selectedPatientDetails.pesel" name="pesel">
+      </div>
+      <div class="mb-3">
+        <label for="gender" class="form-label">Płeć</label>
+        <input type="text" class="form-control" id="gender" [(ngModel)]="selectedPatientDetails.gender" name="gender">
+      </div>
+      <div class="mb-3">
+        <label for="symptoms" class="form-label">Objawy</label>
+        <textarea class="form-control" id="symptoms" [(ngModel)]="selectedPatientDetails.symptoms" name="symptoms"></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel click')">Anuluj</button>
+    <button type="button" class="btn btn-primary" (click)="savePatientDetails()">Zapisz zmiany</button>
+  </div>
+</ng-template>

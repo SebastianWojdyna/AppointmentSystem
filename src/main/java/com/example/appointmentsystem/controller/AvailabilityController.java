@@ -184,4 +184,33 @@ public class AvailabilityController {
         List<Availability> availabilities = availabilityService.filterAvailability(date, specialization);
         return ResponseEntity.ok(availabilities);
     }
+
+    @PutMapping("/patient-details/{availabilityId}")
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
+    public ResponseEntity<?> updatePatientDetails(@PathVariable Long availabilityId, @RequestBody PatientDetailsDto detailsDto) {
+        Availability availability = availabilityService.findById(availabilityId)
+                .orElseThrow(() -> new RuntimeException("Availability not found"));
+
+        if (!availability.getIsBooked()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Appointment is not booked."));
+        }
+
+        PatientDetails patientDetails = availability.getPatientDetails();
+        if (patientDetails == null) {
+            patientDetails = new PatientDetails();
+            patientDetails.setAvailability(availability);
+        }
+
+        patientDetails.setFirstName(detailsDto.getFirstName());
+        patientDetails.setLastName(detailsDto.getLastName());
+        patientDetails.setPesel(detailsDto.getPesel());
+        patientDetails.setGender(detailsDto.getGender());
+        patientDetails.setBirthDate(detailsDto.getBirthDate());
+        patientDetails.setSymptoms(detailsDto.getSymptoms());
+
+        availabilityService.savePatientDetails(patientDetails);
+
+        return ResponseEntity.ok(Collections.singletonMap("message", "Patient details updated successfully."));
+    }
+
 }

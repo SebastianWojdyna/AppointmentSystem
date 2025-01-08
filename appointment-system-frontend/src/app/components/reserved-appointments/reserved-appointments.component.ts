@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-reserved-appointments',
@@ -8,16 +9,16 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ReservedAppointmentsComponent implements OnInit {
   reservedAppointments: any[] = [];
+  selectedPatientDetails: any = null;
   successMessage: string = '';
   errorMessage: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private modalService: NgbModal) {}
 
   ngOnInit(): void {
     this.loadReservedAppointments();
   }
 
-  // Pobiera listę zarezerwowanych wizyt
   loadReservedAppointments(): void {
     this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability/reserved').subscribe({
       next: (data) => {
@@ -31,6 +32,28 @@ export class ReservedAppointmentsComponent implements OnInit {
         console.error('Failed to load reserved appointments:', err);
       }
     });
+  }
+
+  openPatientDetailsModal(content: any, patientDetails: any): void {
+    this.selectedPatientDetails = { ...patientDetails };
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
+  }
+
+  savePatientDetails(): void {
+    if (this.selectedPatientDetails) {
+      this.http.put(`https://appointment-system-backend.azurewebsites.net/api/patient-details/${this.selectedPatientDetails.availabilityId}`, this.selectedPatientDetails)
+        .subscribe({
+          next: () => {
+            this.successMessage = 'Dane pacjenta zostały zaktualizowane!';
+            this.loadReservedAppointments();
+            this.modalService.dismissAll();
+          },
+          error: (err) => {
+            this.errorMessage = 'Nie udało się zaktualizować danych pacjenta.';
+            console.error('Failed to update patient details:', err);
+          }
+        });
+    }
   }
 
   // Anuluje wizytę
