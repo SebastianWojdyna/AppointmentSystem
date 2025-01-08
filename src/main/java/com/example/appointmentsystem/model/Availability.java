@@ -31,9 +31,10 @@ public class Availability {
     @Column(nullable = false)
     private boolean isBooked = false;
 
-    @OneToOne(mappedBy = "availability", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "availability", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference
     private PatientDetails patientDetails;
+
 
     @PrePersist
     @PreUpdate

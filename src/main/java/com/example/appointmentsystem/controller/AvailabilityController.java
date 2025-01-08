@@ -166,15 +166,24 @@ public class AvailabilityController {
 
     @DeleteMapping("/cancel/{id}")
     @PreAuthorize("hasAuthority('ROLE_PATIENT')")
-    public ResponseEntity<?> cancelAppointment(@PathVariable Long id, Authentication authentication){
+    public ResponseEntity<?> cancelAppointment(@PathVariable Long id, Authentication authentication) {
         String username = authentication.getName();
         User patient = userService.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Patient not found!"));
 
+        Availability availability = availabilityService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Availability not found"));
+
+        // Usuń powiązane dane pacjenta, jeśli istnieją
+        if (availability.getPatientDetails() != null) {
+            availabilityService.deletePatientDetails(availability.getPatientDetails());
+            availability.setPatientDetails(null);
+        }
+
         availabilityService.cancelAppointment(id, patient);
         return ResponseEntity.ok(Collections.singletonMap("message", "Rezerwacja została anulowana!"));
-
     }
+
 
     @GetMapping("/filter")
     public ResponseEntity<List<Availability>> filterAvailability(

@@ -176,4 +176,11 @@ public class AvailabilityService {
     public void savePatientDetails(PatientDetails patientDetails) {
         patientDetailsRepository.save(patientDetails);
     }
+
+    @Transactional
+    public void deletePatientDetails(PatientDetails patientDetails) {
+        if (patientDetails != null) {
+            patientDetailsRepository.delete(patientDetails);
+        }
+    }
 }
