@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'app-doctor-dashboard',
-  templateUrl: './doctor-dashboard.component.html',
-  styleUrls: ['./doctor-dashboard.component.css']
+    selector: 'app-doctor-dashboard',
+    templateUrl: './doctor-dashboard.component.html',
+    styleUrls: ['./doctor-dashboard.component.css'],
+    standalone: false
 })
 export class DoctorDashboardComponent implements OnInit {
   availableServices: any[] = [];

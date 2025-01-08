@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'app-patient-dashboard',
-  templateUrl: './patient-dashboard.component.html',
-  styleUrls: ['./patient-dashboard.component.css']
+    selector: 'app-patient-dashboard',
+    templateUrl: './patient-dashboard.component.html',
+    styleUrls: ['./patient-dashboard.component.css'],
+    standalone: false
 })
 export class PatientDashboardComponent implements OnInit {
   availableAppointments: any[] = [];

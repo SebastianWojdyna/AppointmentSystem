@@ -3,9 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-reserved-appointments',
-  templateUrl: './reserved-appointments.component.html',
-  styleUrls: ['./reserved-appointments.component.css']
+    selector: 'app-reserved-appointments',
+    templateUrl: './reserved-appointments.component.html',
+    styleUrls: ['./reserved-appointments.component.css'],
+    standalone: false
 })
 export class ReservedAppointmentsComponent implements OnInit {
   reservedAppointments: any[] = [];
