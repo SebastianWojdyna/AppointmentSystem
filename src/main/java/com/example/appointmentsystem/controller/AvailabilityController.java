@@ -1,5 +1,6 @@
 package com.example.appointmentsystem.controller;
 
+import com.example.appointmentsystem.dto.AvailabilityDto;
 import com.example.appointmentsystem.dto.AvailabilityRequest;
 import com.example.appointmentsystem.dto.PatientDetailsDto;
 import com.example.appointmentsystem.model.Availability;
@@ -154,12 +155,12 @@ public class AvailabilityController {
 
     @GetMapping("/reserved")
     @PreAuthorize("hasAuthority('ROLE_PATIENT')")
-    public ResponseEntity<List<Availability>> getReservedAppointments(Authentication authentication) {
+    public ResponseEntity<List<AvailabilityDto>> getReservedAppointments(Authentication authentication) {
         String username = authentication.getName();
         User patient = userService.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-        List<Availability> reservedAppointments = availabilityService.getReservedAppointments(patient.getId());
+        List<AvailabilityDto> reservedAppointments = availabilityService.getReservedAppointments(patient.getId());
         return ResponseEntity.ok(reservedAppointments);
     }
 

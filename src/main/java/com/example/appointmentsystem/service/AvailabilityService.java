@@ -5,6 +5,7 @@ import com.example.appointmentsystem.model.Doctor;
 import com.example.appointmentsystem.model.AppointmentServiceType;
 import com.example.appointmentsystem.model.User;
 import com.example.appointmentsystem.model.PatientDetails;
+import com.example.appointmentsystem.dto.AvailabilityDto;
 import com.example.appointmentsystem.repository.AvailabilityRepository;
 import com.example.appointmentsystem.repository.PatientDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,13 @@ public class AvailabilityService {
 
     @Autowired
     private PatientDetailsRepository patientDetailsRepository;
+
+    private final PatientDetailsMapper patientDetailsMapper;
+
+    // Konstruktor dla wstrzyknięcia PatientDetailsMapper
+    public AvailabilityService(PatientDetailsMapper patientDetailsMapper) {
+        this.patientDetailsMapper = patientDetailsMapper;
+    }
 
     public void addDoctorAvailability(Doctor doctor, AppointmentServiceType service, List<LocalDateTime> times, double price) {
         String specialization = doctor.getSpecialization();
@@ -83,6 +91,7 @@ public class AvailabilityService {
         availabilityRepository.save(availability);
     }
 
+
     // Rezerwacja wizyty bez ankiety (tylko dla istniejących pacjentów)
     public void bookAppointment(Long availabilityId, User patient) {
         Availability availability = availabilityRepository.findById(availabilityId)
@@ -97,8 +106,29 @@ public class AvailabilityService {
         availabilityRepository.save(availability);
     }
 
-    public List<Availability> getReservedAppointments(Long patientId) {
-        return availabilityRepository.findByPatientId(patientId);
+    public List<AvailabilityDto> getReservedAppointments(Long patientId) {
+        List<Availability> appointments = availabilityRepository.findByPatientId(patientId);
+        return appointments.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    // Mapowanie Availability na AvailabilityDto
+    private AvailabilityDto mapToDto(Availability availability) {
+        AvailabilityDto dto = new AvailabilityDto();
+        dto.setId(availability.getId());
+        dto.setDoctor(availability.getDoctor());
+        dto.setService(availability.getService());
+        dto.setAvailableTime(availability.getAvailableTime());
+        dto.setPrice(availability.getPrice());
+        dto.setSpecialization(availability.getSpecialization());
+        dto.setIsBooked(availability.getIsBooked());
+
+        if (availability.getPatientDetails() != null) {
+            dto.setPatientDetails(patientDetailsMapper.mapToDto(availability.getPatientDetails()));
+        }
+
+        return dto;
     }
 
     @Transactional
