@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 export class PatientDashboardComponent implements OnInit {
   availableAppointments: any[] = [];
   filteredAppointments: any[] = [];
+  recommendedAppointments: any[] = [];
   specializations: string[] = [];
   doctors: string[] = [];
   filterDate: string = '';
@@ -146,5 +147,28 @@ export class PatientDashboardComponent implements OnInit {
       console.error('Error parsing date:', rawDate, error);
       return null;
     }
+  }
+
+  getRecommendations(): void {
+    this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability/recommendations', {
+      params: {
+        date: this.filterDate,
+        specialization: this.filterSpecialization !== 'Wybierz specjalizację' ? this.filterSpecialization : '',
+        doctorId: this.filterDoctor !== 'Wybierz lekarza' ? this.getDoctorId(this.filterDoctor) : ''
+      }
+    }).subscribe({
+      next: (recommendations) => {
+        this.recommendedAppointments = recommendations;
+        $('#recommendationsModal').modal('show');
+      },
+      error: () => {
+        this.errorMessage = 'Nie udało się pobrać rekomendacji.';
+      }
+    });
+  }
+
+  getDoctorId(doctorName: string): string {
+    const doctor = this.availableAppointments.find(appt => appt.doctor.name === doctorName);
+    return doctor ? doctor.doctor.id : '';
   }
 }

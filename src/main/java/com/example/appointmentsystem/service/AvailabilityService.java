@@ -183,4 +183,44 @@ public class AvailabilityService {
             patientDetailsRepository.delete(patientDetails);
         }
     }
+
+    // Algorytm rekomendacji
+    public List<AvailabilityDto> getRecommendations(String date, String specialization, Long doctorId) {
+        List<Availability> allAppointments = availabilityRepository.findAll();
+
+        // Krok 1: Filtruj dokładne dopasowania
+        List<Availability> recommendedAppointments = allAppointments.stream()
+                .filter(a -> !a.getIsBooked())
+                .filter(a -> {
+                    if (date != null) {
+                        return a.getAvailableTime().toLocalDate().toString().equals(date);
+                    }
+                    return true;
+                })
+                .filter(a -> {
+                    if (specialization != null) {
+                        return a.getSpecialization().equalsIgnoreCase(specialization);
+                    }
+                    return true;
+                })
+                .filter(a -> {
+                    if (doctorId != null) {
+                        return a.getDoctor().getId().equals(doctorId);
+                    }
+                    return true;
+                })
+                .collect(Collectors.toList());
+
+        // Krok 2: Jeśli brak wyników, szukaj alternatywnych wizyt
+        if (recommendedAppointments.isEmpty()) {
+            recommendedAppointments = allAppointments.stream()
+                    .filter(a -> !a.getIsBooked())
+                    .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
+                    .collect(Collectors.toList());
+        }
+
+        return recommendedAppointments.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
 }
