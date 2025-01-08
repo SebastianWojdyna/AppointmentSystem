@@ -1,5 +1,7 @@
 package com.example.appointmentsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -22,6 +24,7 @@ public class PatientDetails {
 
     @OneToOne
     @JoinColumn(name = "availability_id", unique = true)
+    @JsonBackReference
     private Availability availability;
 
     public Long getId() { return id; }

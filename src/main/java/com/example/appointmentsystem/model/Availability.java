@@ -1,5 +1,7 @@
 package com.example.appointmentsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -30,6 +32,7 @@ public class Availability {
     private boolean isBooked = false;
 
     @OneToOne(mappedBy = "availability", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private PatientDetails patientDetails;
 
     @PrePersist
