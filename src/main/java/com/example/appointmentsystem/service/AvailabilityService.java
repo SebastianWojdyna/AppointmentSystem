@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -188,34 +189,37 @@ public class AvailabilityService {
     public List<AvailabilityDto> getRecommendations(String date, String specialization, Long doctorId) {
         List<Availability> allAppointments = availabilityRepository.findAll();
 
-        // Krok 1: Filtruj dokładne dopasowania
+        // Priorytet 1: Dokładne dopasowanie do wybranych kryteriów
         List<Availability> recommendedAppointments = allAppointments.stream()
                 .filter(a -> !a.getIsBooked())
-                .filter(a -> {
-                    if (date != null) {
-                        return a.getAvailableTime().toLocalDate().toString().equals(date);
-                    }
-                    return true;
-                })
-                .filter(a -> {
-                    if (specialization != null) {
-                        return a.getSpecialization().equalsIgnoreCase(specialization);
-                    }
-                    return true;
-                })
-                .filter(a -> {
-                    if (doctorId != null) {
-                        return a.getDoctor().getId().equals(doctorId);
-                    }
-                    return true;
-                })
+                .filter(a -> date == null || a.getAvailableTime().toLocalDate().toString().equals(date))
+                .filter(a -> specialization == null || a.getSpecialization().equalsIgnoreCase(specialization))
+                .filter(a -> doctorId == null || a.getDoctor().getId().equals(doctorId))
                 .collect(Collectors.toList());
 
-        // Krok 2: Jeśli brak wyników, szukaj alternatywnych wizyt
+        // Priorytet 2: Dopasowanie lekarzy z tej samej specjalizacji (jeśli wybrano specjalizację)
+        if (recommendedAppointments.isEmpty() && specialization != null) {
+            recommendedAppointments = allAppointments.stream()
+                    .filter(a -> !a.getIsBooked())
+                    .filter(a -> a.getSpecialization().equalsIgnoreCase(specialization))
+                    .collect(Collectors.toList());
+        }
+
+        // Priorytet 3: Dopasowanie do najbliższych terminów w tej samej specjalizacji
+        if (recommendedAppointments.isEmpty() && specialization != null) {
+            recommendedAppointments = allAppointments.stream()
+                    .filter(a -> !a.getIsBooked())
+                    .filter(a -> a.getSpecialization().equalsIgnoreCase(specialization))
+                    .sorted(Comparator.comparing(Availability::getAvailableTime))
+                    .collect(Collectors.toList());
+        }
+
+        // Priorytet 4: Dopasowanie lekarzy podstawowej opieki zdrowotnej
         if (recommendedAppointments.isEmpty()) {
             recommendedAppointments = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
+                    .sorted(Comparator.comparing(Availability::getAvailableTime))
                     .collect(Collectors.toList());
         }
 
@@ -223,4 +227,5 @@ public class AvailabilityService {
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
+
 }
