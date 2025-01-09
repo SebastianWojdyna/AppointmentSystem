@@ -8,6 +8,8 @@ import com.example.appointmentsystem.model.PatientDetails;
 import com.example.appointmentsystem.dto.AvailabilityDto;
 import com.example.appointmentsystem.repository.AvailabilityRepository;
 import com.example.appointmentsystem.repository.PatientDetailsRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,8 @@ public class AvailabilityService {
     private PatientDetailsRepository patientDetailsRepository;
 
     private final PatientDetailsMapper patientDetailsMapper;
+
+    private static final Logger logger = LoggerFactory.getLogger(AvailabilityService.class);
 
     // Konstruktor dla wstrzyknięcia PatientDetailsMapper
     public AvailabilityService(PatientDetailsMapper patientDetailsMapper) {
@@ -187,45 +191,78 @@ public class AvailabilityService {
 
     // Algorytm rekomendacji
     public List<AvailabilityDto> getRecommendations(String date, String specialization, Long doctorId) {
-        List<Availability> allAppointments = availabilityRepository.findAll();
+        logger.info("Rozpoczynanie generowania rekomendacji...");
+        logger.info("Podane kryteria - Data: {}, Specjalizacja: {}, ID Lekarza: {}", date, specialization, doctorId);
 
-        // Priorytet 1: Dokładne dopasowanie do wybranych kryteriów
+        List<Availability> allAppointments = availabilityRepository.findAll();
+        logger.info("Pobrano {} wizyt z bazy danych.", allAppointments.size());
+
+        // Priorytet 1: Dokładne dopasowanie wszystkich kryteriów
         List<Availability> recommendedAppointments = allAppointments.stream()
                 .filter(a -> !a.getIsBooked())
                 .filter(a -> date == null || a.getAvailableTime().toLocalDate().toString().equals(date))
                 .filter(a -> specialization == null || a.getSpecialization().equalsIgnoreCase(specialization))
                 .filter(a -> doctorId == null || a.getDoctor().getId().equals(doctorId))
+                .sorted(Comparator.comparing(Availability::getAvailableTime))
                 .collect(Collectors.toList());
 
-        // Priorytet 2: Dopasowanie lekarzy z tej samej specjalizacji (jeśli wybrano specjalizację)
-        if (recommendedAppointments.isEmpty() && specialization != null) {
+        logger.info("Priorytet 1: Znaleziono {} wizyt pasujących dokładnie do podanych kryteriów.", recommendedAppointments.size());
+
+        // Priorytet 2: Dopasowanie według daty i specjalizacji
+        if (recommendedAppointments.isEmpty() && date != null && specialization != null) {
+            logger.info("Priorytet 2: Szukanie według daty {} i specjalizacji {}...", date, specialization);
+            recommendedAppointments = allAppointments.stream()
+                    .filter(a -> !a.getIsBooked())
+                    .filter(a -> a.getAvailableTime().toLocalDate().toString().equals(date))
+                    .filter(a -> a.getSpecialization().equalsIgnoreCase(specialization))
+                    .sorted(Comparator.comparing(Availability::getAvailableTime))
+                    .collect(Collectors.toList());
+            logger.info("Priorytet 2: Znaleziono {} wizyt.", recommendedAppointments.size());
+        }
+
+        // Priorytet 3: Dopasowanie według specjalizacji i lekarza
+        if (recommendedAppointments.isEmpty() && specialization != null && doctorId != null) {
+            logger.info("Priorytet 3: Szukanie według specjalizacji {} i ID lekarza {}...", specialization, doctorId);
             recommendedAppointments = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getSpecialization().equalsIgnoreCase(specialization))
+                    .filter(a -> a.getDoctor().getId().equals(doctorId))
+                    .sorted(Comparator.comparing(Availability::getAvailableTime))
                     .collect(Collectors.toList());
+            logger.info("Priorytet 3: Znaleziono {} wizyt.", recommendedAppointments.size());
         }
 
-        // Priorytet 3: Dopasowanie do najbliższych terminów w tej samej specjalizacji
+        // Priorytet 4: Dopasowanie według specjalizacji w najbliższych terminach
         if (recommendedAppointments.isEmpty() && specialization != null) {
+            logger.info("Priorytet 4: Szukanie najbliższych wizyt według specjalizacji {}...", specialization);
             recommendedAppointments = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getSpecialization().equalsIgnoreCase(specialization))
                     .sorted(Comparator.comparing(Availability::getAvailableTime))
                     .collect(Collectors.toList());
+            logger.info("Priorytet 4: Znaleziono {} wizyt.", recommendedAppointments.size());
         }
 
-        // Priorytet 4: Dopasowanie lekarzy podstawowej opieki zdrowotnej
+        // Priorytet 5: Dopasowanie lekarzy podstawowej opieki zdrowotnej
         if (recommendedAppointments.isEmpty()) {
+            logger.info("Priorytet 5: Szukanie wizyt lekarzy podstawowej opieki zdrowotnej...");
             recommendedAppointments = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
                     .sorted(Comparator.comparing(Availability::getAvailableTime))
                     .collect(Collectors.toList());
+            logger.info("Priorytet 5: Znaleziono {} wizyt.", recommendedAppointments.size());
+        }
+
+        // Jeśli nadal brak wyników
+        if (recommendedAppointments.isEmpty()) {
+            logger.warn("Nie znaleziono żadnych wizyt spełniających jakiekolwiek kryteria.");
+        } else {
+            logger.info("Znaleziono {} rekomendacji w sumie.", recommendedAppointments.size());
         }
 
         return recommendedAppointments.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
-
 }
