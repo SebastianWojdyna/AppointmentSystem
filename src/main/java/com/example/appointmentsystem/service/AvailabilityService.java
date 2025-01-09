@@ -191,8 +191,13 @@ public class AvailabilityService {
         }
     }
 
-    // Algorytm rekomendacji
+    // ### Rekomendacje wizyt ###
     private static final int DEFAULT_MAX_DAYS = 7;
+    private static final int MAX_RESULTS = 5; // Maksymalna liczba wyników do zwrócenia
+
+    /**
+     * Algorytm rekomendacji wizyt.
+     */
     public List<AvailabilityDto> getRecommendations(String date, String specialization, Long doctorId) {
         logger.info("Rozpoczynanie generowania rekomendacji...");
         logger.info("Podane kryteria - Data: {}, Specjalizacja: {}, ID Lekarza: {}", date, specialization, doctorId);
@@ -209,18 +214,19 @@ public class AvailabilityService {
                 .filter(a -> specialization == null || a.getSpecialization().equalsIgnoreCase(specialization))
                 .filter(a -> doctorId == null || a.getDoctor().getId().equals(doctorId))
                 .sorted(Comparator.comparing(Availability::getAvailableTime))
-                .toList();
+                .limit(MAX_RESULTS)
+                .collect(Collectors.toList());
 
         logger.info("Priorytet 1: Znaleziono {} wizyt pasujących dokładnie do podanych kryteriów.", recommendedAppointments.size());
 
-        // Priorytet 2: Szukanie tego samego lekarza w najbliższych terminach (do 7 dni w przód i w tył)
+        // Priorytet 2: Najbliższe terminy tego samego lekarza (do 7 dni w przód i w tył)
         if (recommendedAppointments.isEmpty() && doctorId != null) {
-            logger.info("Priorytet 2: Szukanie tego samego lekarza w najbliższych terminach...");
+            logger.info("Priorytet 2: Szukanie najbliższych terminów tego samego lekarza...");
             recommendedAppointments = findNearestAppointments(allAppointments, date, doctorId, null);
             logger.info("Priorytet 2: Znaleziono {} wizyt.", recommendedAppointments.size());
         }
 
-        // Priorytet 3: Szukanie innego lekarza tej samej specjalizacji w tej samej dacie
+        // Priorytet 3: Inny lekarz tej samej specjalizacji w tej samej dacie
         if (recommendedAppointments.isEmpty() && date != null && specialization != null) {
             logger.info("Priorytet 3: Szukanie innego lekarza tej samej specjalizacji w tej samej dacie...");
             recommendedAppointments = allAppointments.stream()
@@ -228,29 +234,30 @@ public class AvailabilityService {
                     .filter(a -> a.getAvailableTime().toLocalDate().toString().equals(date))
                     .filter(a -> a.getSpecialization().equalsIgnoreCase(specialization))
                     .sorted(Comparator.comparing(Availability::getAvailableTime))
-                    .toList();
+                    .limit(MAX_RESULTS)
+                    .collect(Collectors.toList());
             logger.info("Priorytet 3: Znaleziono {} wizyt.", recommendedAppointments.size());
         }
 
-        // Priorytet 4: Szukanie lekarza tej samej specjalizacji w innych terminach
+        // Priorytet 4: Lekarz tej samej specjalizacji w innych terminach (do 7 dni)
         if (recommendedAppointments.isEmpty() && specialization != null) {
-            logger.info("Priorytet 4: Szukanie lekarza tej samej specjalizacji w innych terminach...");
+            logger.info("Priorytet 4: Szukanie lekarza tej samej specjalizacji w najbliższych terminach...");
             recommendedAppointments = findNearestAppointments(allAppointments, date, null, specialization);
             logger.info("Priorytet 4: Znaleziono {} wizyt.", recommendedAppointments.size());
         }
 
-        // Priorytet 5: Lekarze podstawowej opieki zdrowotnej (internista, POZ)
+        // Priorytet 5: Lekarze podstawowej opieki zdrowotnej
         if (recommendedAppointments.isEmpty()) {
             logger.info("Priorytet 5: Szukanie wizyt lekarzy podstawowej opieki zdrowotnej...");
             recommendedAppointments = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
                     .sorted(Comparator.comparing(Availability::getAvailableTime))
-                    .toList();
+                    .limit(MAX_RESULTS)
+                    .collect(Collectors.toList());
             logger.info("Priorytet 5: Znaleziono {} wizyt.", recommendedAppointments.size());
         }
 
-        // Jeśli nadal brak wyników
         if (recommendedAppointments.isEmpty()) {
             logger.warn("Nie znaleziono żadnych wizyt spełniających jakiekolwiek kryteria.");
         } else {
@@ -267,37 +274,20 @@ public class AvailabilityService {
      */
     private List<Availability> findNearestAppointments(List<Availability> allAppointments, String date, Long doctorId, String specialization) {
         List<Availability> results = new ArrayList<>();
-        try {
-            LocalDate targetDate = date != null ? LocalDate.parse(date) : null;
+        LocalDate targetDate = date != null ? LocalDate.parse(date) : null;
 
-            for (int range = 1; range <= DEFAULT_MAX_DAYS; range++) {
-                final int currentRange = range; // Tworzymy finalną zmienną dla lambdy
-                final LocalDate currentTargetDate = targetDate; // Finalna zmienna dla lambdy
+        for (int range = 1; range <= DEFAULT_MAX_DAYS; range++) {
+            int currentRange = range;
+            results = allAppointments.stream()
+                    .filter(a -> !a.getIsBooked())
+                    .filter(a -> doctorId == null || a.getDoctor().getId().equals(doctorId))
+                    .filter(a -> specialization == null || a.getSpecialization().equalsIgnoreCase(specialization))
+                    .filter(a -> isWithinDateRange(a, targetDate, currentRange))
+                    .sorted(Comparator.comparing(Availability::getAvailableTime))
+                    .limit(MAX_RESULTS)
+                    .collect(Collectors.toList());
 
-                List<Availability> filtered = allAppointments.stream()
-                        .filter(a -> !a.getIsBooked())
-                        .filter(a -> doctorId == null || a.getDoctor().getId().equals(doctorId))
-                        .filter(a -> specialization == null || a.getSpecialization().equalsIgnoreCase(specialization))
-                        .filter(a -> isWithinDateRange(a, currentTargetDate, currentRange)) // Wywołanie funkcji pomocniczej
-                        .sorted(Comparator.comparing(Availability::getAvailableTime))
-                        .toList(); // Użycie .toList() zamiast Collectors.toList()
-
-                results.addAll(filtered);
-                if (!results.isEmpty()) break; // Przerwij, jeśli znaleziono wyniki w obecnym zakresie
-            }
-
-            // Jeśli brak wyników, znajdź pierwsze dostępne terminy
-            if (results.isEmpty()) {
-                results = allAppointments.stream()
-                        .filter(a -> !a.getIsBooked())
-                        .filter(a -> doctorId == null || a.getDoctor().getId().equals(doctorId))
-                        .filter(a -> specialization == null || a.getSpecialization().equalsIgnoreCase(specialization))
-                        .sorted(Comparator.comparing(Availability::getAvailableTime))
-                        .toList();
-            }
-
-        } catch (Exception e) {
-            logger.error("Błąd podczas wyszukiwania najbliższych wizyt: {}", e.getMessage());
+            if (!results.isEmpty()) break;
         }
 
         return results;
