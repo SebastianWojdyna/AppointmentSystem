@@ -197,8 +197,10 @@ public class AvailabilityService {
         List<Availability> allAppointments = availabilityRepository.findAll();
         logger.info("Pobrano {} wizyt z bazy danych.", allAppointments.size());
 
+        List<Availability> recommendedAppointments;
+
         // Priorytet 1: Dokładne dopasowanie wszystkich kryteriów
-        List<Availability> recommendedAppointments = allAppointments.stream()
+        recommendedAppointments = allAppointments.stream()
                 .filter(a -> !a.getIsBooked())
                 .filter(a -> date == null || a.getAvailableTime().toLocalDate().toString().equals(date))
                 .filter(a -> specialization == null || a.getSpecialization().equalsIgnoreCase(specialization))
@@ -208,33 +210,32 @@ public class AvailabilityService {
 
         logger.info("Priorytet 1: Znaleziono {} wizyt pasujących dokładnie do podanych kryteriów.", recommendedAppointments.size());
 
-        // Priorytet 2: Dopasowanie według daty i specjalizacji
+        // Priorytet 2: Ten sam lekarz w innym terminie
+        if (recommendedAppointments.isEmpty() && doctorId != null) {
+            logger.info("Priorytet 2: Szukanie tego samego lekarza w innym terminie...");
+            recommendedAppointments = allAppointments.stream()
+                    .filter(a -> !a.getIsBooked())
+                    .filter(a -> a.getDoctor().getId().equals(doctorId))
+                    .sorted(Comparator.comparing(Availability::getAvailableTime))
+                    .collect(Collectors.toList());
+            logger.info("Priorytet 2: Znaleziono {} wizyt.", recommendedAppointments.size());
+        }
+
+        // Priorytet 3: Inny lekarz tej samej specjalizacji w tej samej dacie
         if (recommendedAppointments.isEmpty() && date != null && specialization != null) {
-            logger.info("Priorytet 2: Szukanie według daty {} i specjalizacji {}...", date, specialization);
+            logger.info("Priorytet 3: Szukanie innego lekarza tej samej specjalizacji w tej samej dacie...");
             recommendedAppointments = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getAvailableTime().toLocalDate().toString().equals(date))
                     .filter(a -> a.getSpecialization().equalsIgnoreCase(specialization))
                     .sorted(Comparator.comparing(Availability::getAvailableTime))
                     .collect(Collectors.toList());
-            logger.info("Priorytet 2: Znaleziono {} wizyt.", recommendedAppointments.size());
-        }
-
-        // Priorytet 3: Dopasowanie według specjalizacji i lekarza
-        if (recommendedAppointments.isEmpty() && specialization != null && doctorId != null) {
-            logger.info("Priorytet 3: Szukanie według specjalizacji {} i ID lekarza {}...", specialization, doctorId);
-            recommendedAppointments = allAppointments.stream()
-                    .filter(a -> !a.getIsBooked())
-                    .filter(a -> a.getSpecialization().equalsIgnoreCase(specialization))
-                    .filter(a -> a.getDoctor().getId().equals(doctorId))
-                    .sorted(Comparator.comparing(Availability::getAvailableTime))
-                    .collect(Collectors.toList());
             logger.info("Priorytet 3: Znaleziono {} wizyt.", recommendedAppointments.size());
         }
 
-        // Priorytet 4: Dopasowanie według specjalizacji w najbliższych terminach
+        // Priorytet 4: Lekarz tej samej specjalizacji w innym terminie
         if (recommendedAppointments.isEmpty() && specialization != null) {
-            logger.info("Priorytet 4: Szukanie najbliższych wizyt według specjalizacji {}...", specialization);
+            logger.info("Priorytet 4: Szukanie lekarza tej samej specjalizacji w innym terminie...");
             recommendedAppointments = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getSpecialization().equalsIgnoreCase(specialization))
@@ -243,7 +244,7 @@ public class AvailabilityService {
             logger.info("Priorytet 4: Znaleziono {} wizyt.", recommendedAppointments.size());
         }
 
-        // Priorytet 5: Dopasowanie lekarzy podstawowej opieki zdrowotnej
+        // Priorytet 5: Lekarze podstawowej opieki zdrowotnej
         if (recommendedAppointments.isEmpty()) {
             logger.info("Priorytet 5: Szukanie wizyt lekarzy podstawowej opieki zdrowotnej...");
             recommendedAppointments = allAppointments.stream()
@@ -265,4 +266,5 @@ public class AvailabilityService {
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
+
 }
