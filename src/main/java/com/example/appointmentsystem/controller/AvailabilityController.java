@@ -247,4 +247,18 @@ public class AvailabilityController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/recommendations")
+    public ResponseEntity<List<AvailabilityDto>> getRecommendations(
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String specialization,
+            @RequestParam(required = false) Long doctorId) {
+
+        List<AvailabilityDto> recommendations = availabilityService.getRecommendations(date, specialization, doctorId);
+
+        if (recommendations.isEmpty()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        return ResponseEntity.ok(recommendations);
+    }
+
 }
