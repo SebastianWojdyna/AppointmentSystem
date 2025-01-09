@@ -104,6 +104,7 @@ export class PatientDashboardComponent implements OnInit {
   }
 
   applyFilters(): void {
+    console.log('Wywołano applyFilters');
     this.filteredAppointments = this.availableAppointments.filter(appt => {
       const matchesDate = this.filterDate ? appt.availableTime.startsWith(this.filterDate) : true;
       const matchesSpec = this.filterSpecialization !== 'Wybierz specjalizację' ? appt.specialization === this.filterSpecialization : true;
@@ -111,9 +112,9 @@ export class PatientDashboardComponent implements OnInit {
       return matchesDate && matchesSpec && matchesDoctor;
     });
 
-    // Jeśli żaden filtr nie jest wybrany, lista pozostaje pusta
-    if (!this.filterDate && this.filterSpecialization === 'Wybierz specjalizację' && this.filterDoctor === 'Wybierz lekarza') {
-      this.filteredAppointments = [];
+    if (this.filteredAppointments.length === 0) {
+      console.log('Brak wizyt, uruchamiam rekomendacje...');
+      this.getRecommendations();
     }
   }
 
@@ -150,6 +151,7 @@ export class PatientDashboardComponent implements OnInit {
   }
 
   getRecommendations(): void {
+    console.log('Wywołano getRecommendations');
     this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability/recommendations', {
       params: {
         date: this.filterDate,
@@ -158,6 +160,7 @@ export class PatientDashboardComponent implements OnInit {
       }
     }).subscribe({
       next: (recommendations) => {
+        console.log('Rekomendacje z API:', recommendations);
         this.recommendedAppointments = recommendations;
         $('#recommendationsModal').modal('show');
       },
