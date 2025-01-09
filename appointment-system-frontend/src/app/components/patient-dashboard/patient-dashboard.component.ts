@@ -161,14 +161,18 @@ export class PatientDashboardComponent implements OnInit {
     }).subscribe({
       next: (recommendations) => {
         console.log('Rekomendacje z API:', recommendations);
-        this.recommendedAppointments = recommendations;
+        this.recommendedAppointments = recommendations.map(appt => ({
+          ...appt,
+          availableTime: this.parseDate(appt.availableTime)
+        }));
         $('#recommendationsModal').modal('show');
       },
-      error: () => {
-        this.errorMessage = 'Nie udało się pobrać rekomendacji.';
+      error: (err) => {
+        console.error('Błąd pobierania rekomendacji:', err);
       }
     });
   }
+
 
   getDoctorId(doctorName: string): string {
     const doctor = this.availableAppointments.find(appt => appt.doctor.name === doctorName);
