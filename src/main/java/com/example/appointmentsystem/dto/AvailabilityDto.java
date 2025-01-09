@@ -16,6 +16,8 @@ public class AvailabilityDto {
     private boolean isBooked;
     private PatientDetailsDto patientDetails;
 
+    private String description;
+
     // Gettery i settery
     public Long getId() {
         return id;
@@ -79,5 +81,13 @@ public class AvailabilityDto {
 
     public void setPatientDetails(PatientDetailsDto patientDetails) {
         this.patientDetails = patientDetails;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

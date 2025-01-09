@@ -161,9 +161,11 @@ export class PatientDashboardComponent implements OnInit {
     }).subscribe({
       next: (recommendations) => {
         console.log('Rekomendacje z API:', recommendations);
+        // Mapujemy rekomendacje i uwzględniamy opis
         this.recommendedAppointments = recommendations.map(appt => ({
           ...appt,
-          availableTime: this.parseDate(appt.availableTime)
+          availableTime: this.parseDate(appt.availableTime),
+          description: appt.description // Dodajemy opis z backendu
         }));
         $('#recommendationsModal').modal('show');
       },
@@ -172,7 +174,6 @@ export class PatientDashboardComponent implements OnInit {
       }
     });
   }
-
 
   getDoctorId(doctorName: string): string {
     const doctor = this.availableAppointments.find(appt => appt.doctor.name === doctorName);
