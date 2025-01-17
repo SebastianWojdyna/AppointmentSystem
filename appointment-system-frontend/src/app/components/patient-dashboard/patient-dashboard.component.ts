@@ -161,12 +161,27 @@ export class PatientDashboardComponent implements OnInit {
     }).subscribe({
       next: (recommendations) => {
         console.log('Rekomendacje z API:', recommendations);
-        // Mapujemy rekomendacje i uwzględniamy opis
-        this.recommendedAppointments = recommendations.map(appt => ({
-          ...appt,
-          availableTime: this.parseDate(appt.availableTime),
-          description: appt.description // Dodajemy opis z backendu
+
+        // Grupowanie rekomendacji według opisu (description)
+        const groupedRecommendations: { [key: string]: any[] } = {};
+        recommendations.forEach(appt => {
+          const description = appt.description || 'Inne';
+          if (!groupedRecommendations[description]) {
+            groupedRecommendations[description] = [];
+          }
+          groupedRecommendations[description].push({
+            ...appt,
+            availableTime: this.parseDate(appt.availableTime)
+          });
+        });
+
+        // Konwersja grupowanych danych do listy, którą można łatwo iterować w Angularze
+        this.recommendedAppointments = Object.entries(groupedRecommendations).map(([key, value]) => ({
+          description: key,
+          appointments: value
         }));
+
+        console.log('Zgrupowane rekomendacje:', this.recommendedAppointments);
         $('#recommendationsModal').modal('show');
       },
       error: (err) => {
@@ -174,6 +189,7 @@ export class PatientDashboardComponent implements OnInit {
       }
     });
   }
+
 
   getDoctorId(doctorName: string): string {
     const doctor = this.availableAppointments.find(appt => appt.doctor.name === doctorName);
