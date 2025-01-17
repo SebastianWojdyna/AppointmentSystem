@@ -30,18 +30,20 @@
     <ul class="navbar-nav ml-auto">
       <!-- Wyświetl "Wyloguj" dla zalogowanych użytkowników -->
       <li class="nav-item" *ngIf="isLoggedIn">
-        <button class="btn btn-outline-danger" (click)="logout()">Wyloguj</button>
+        <a class="nav-link text-danger font-weight-bold" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i> Wyloguj
+        </a>
       </li>
       <!-- Wyświetl "Zaloguj" i "Zarejestruj się" dla niezalogowanych użytkowników -->
-      <li class="nav-item" *ngIf="!isLoggedIn">
-        <button class="btn btn-outline-primary mr-2" (click)="navigateToLogin()">
-          Zaloguj
-        </button>
+      <li class="nav-item mx-3" *ngIf="!isLoggedIn">
+        <a class="nav-link text-primary font-weight-bold" (click)="navigateToLogin()">
+          <i class="fas fa-sign-in-alt"></i> Zaloguj
+        </a>
       </li>
-      <li class="nav-item" *ngIf="!isLoggedIn">
-        <button class="btn btn-outline-secondary" (click)="navigateToRegister()">
-          Zarejestruj się
-        </button>
+      <li class="nav-item mx-3" *ngIf="!isLoggedIn">
+        <a class="nav-link text-secondary font-weight-bold" (click)="navigateToRegister()">
+          <i class="fas fa-user-plus"></i> Zarejestruj się
+        </a>
       </li>
     </ul>
   </div>
