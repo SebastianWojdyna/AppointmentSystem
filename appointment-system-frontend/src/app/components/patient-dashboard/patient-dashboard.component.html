@@ -113,7 +113,7 @@
           </div>
           <div *ngFor="let group of recommendedAppointments">
             <h6 class="font-weight-bold text-primary">{{ group.description }}</h6> <!-- Wyświetla opis rekomendacji -->
-            <table class="table table-striped">
+            <table class="table table-bordered">
               <thead>
               <tr>
                 <th>Data</th>
@@ -140,7 +140,7 @@
   </div>
 
   <!-- Tabela dostępnych wizyt -->
-  <table class="table table-striped table-bordered text-center">
+  <table class="table table-bordered text-center">
     <thead>
     <tr>
       <th style="width: 5%;">ID</th>
@@ -168,6 +168,6 @@
   </table>
 
   <div *ngIf="filteredAppointments.length === 0" class="text-center text-muted">
-    Brak dostępnych wizyt.
+    <!-- some text here -->
   </div>
 </div>
