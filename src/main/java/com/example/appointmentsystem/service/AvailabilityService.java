@@ -303,11 +303,9 @@ public class AvailabilityService {
     private boolean isWithinDateRange(Availability availability, LocalDate targetDate, int range) {
         if (targetDate != null) {
             LocalDate appointmentDate = availability.getAvailableTime().toLocalDate();
-            return appointmentDate.isEqual(targetDate) ||
-                    appointmentDate.isEqual(targetDate.minusDays(range)) ||
-                    appointmentDate.isEqual(targetDate.plusDays(range)) ||
-                    (appointmentDate.isAfter(targetDate.minusDays(range)) && appointmentDate.isBefore(targetDate.plusDays(range)));
+            return !appointmentDate.isBefore(targetDate.minusDays(range)) &&
+                    !appointmentDate.isAfter(targetDate.plusDays(range));
         }
-        return true;
+        return false; // Jeśli brak targetDate, wyniki nie powinny być brane pod uwagę
     }
 }
