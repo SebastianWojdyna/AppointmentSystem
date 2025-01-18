@@ -227,7 +227,7 @@ public class AvailabilityService {
         // 2. Priorytet: Najbliższe terminy tego samego lekarza
         if (finalDoctorId != null) {
             List<Availability> sameDoctorMatches = findNearestAppointments(allAppointments, finalDate, finalDoctorId, null);
-            addRecommendations(recommendations, sameDoctorMatches, "Najbliższe terminy Twojego lekarza");
+            addRecommendations(recommendations, sameDoctorMatches, "Najbliższe terminy Twojego lekarza (+/- " + DEFAULT_MAX_DAYS + " dni)");
         }
 
         // 3. Priorytet: Inny lekarz tej samej specjalizacji w tej samej dacie
@@ -245,7 +245,7 @@ public class AvailabilityService {
         // 4. Priorytet: Lekarze tej samej specjalizacji w najbliższych terminach
         if (finalSpecialization != null) {
             List<Availability> sameSpecializationNearest = findNearestAppointments(allAppointments, null, null, finalSpecialization);
-            addRecommendations(recommendations, sameSpecializationNearest, "Lekarze tej samej specjalizacji w najbliższych terminach");
+            addRecommendations(recommendations, sameSpecializationNearest, "Lekarze tej samej specjalizacji w najbliższych terminach (+/- " + DEFAULT_MAX_DAYS + " dni)");
         }
 
         // 5. Priorytet: Lekarze ogólni w tej dacie lub najbliższej dostępnej
@@ -282,7 +282,7 @@ public class AvailabilityService {
 
     private List<Availability> findNearestAppointments(List<Availability> allAppointments, String date, Long doctorId, String specialization) {
         List<Availability> results = new ArrayList<>();
-        LocalDate targetDate = date != null ? LocalDate.parse(date) : null;
+        LocalDate targetDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date) : null;
 
         for (int range = 1; range <= DEFAULT_MAX_DAYS; range++) {
             int currentRange = range;
@@ -304,6 +304,8 @@ public class AvailabilityService {
         if (targetDate != null) {
             LocalDate appointmentDate = availability.getAvailableTime().toLocalDate();
             return appointmentDate.isEqual(targetDate) ||
+                    appointmentDate.isEqual(targetDate.minusDays(range)) ||
+                    appointmentDate.isEqual(targetDate.plusDays(range)) ||
                     (appointmentDate.isAfter(targetDate.minusDays(range)) && appointmentDate.isBefore(targetDate.plusDays(range)));
         }
         return true;
