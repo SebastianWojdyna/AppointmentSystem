@@ -227,7 +227,7 @@ public class AvailabilityService {
         // 2. Priorytet: Najbliższe terminy tego samego lekarza
         if (finalDoctorId != null) {
             List<Availability> sameDoctorMatches = findNearestAppointments(allAppointments, finalDate, finalDoctorId, null);
-            addRecommendations(recommendations, sameDoctorMatches, "Najbliższe terminy Twojego lekarza (+/- " + DEFAULT_MAX_DAYS + " dni)");
+            addRecommendations(recommendations, sameDoctorMatches, "Najbliższe terminy wybranego lekarza (+/- " + DEFAULT_MAX_DAYS + " dni)");
         }
 
         // 3. Priorytet: Inny lekarz tej samej specjalizacji w tej samej dacie
@@ -245,7 +245,7 @@ public class AvailabilityService {
         // 4. Priorytet: Lekarze tej samej specjalizacji w najbliższych terminach
         if (finalSpecialization != null) {
             List<Availability> sameSpecializationNearest = findNearestAppointments(allAppointments, null, null, finalSpecialization);
-            addRecommendations(recommendations, sameSpecializationNearest, "Lekarze tej samej specjalizacji w najbliższych terminach (+/- " + DEFAULT_MAX_DAYS + " dni od wybranego terminu)");
+            addRecommendations(recommendations, sameSpecializationNearest, "Lekarze tej samej specjalizacji w najbliższych terminach (+/- " + DEFAULT_MAX_DAYS + " dni)");
         }
 
         // 5. Priorytet: Lekarze ogólni w tej dacie lub najbliższej dostępnej (+/- 7 dni)
@@ -257,7 +257,7 @@ public class AvailabilityService {
                     .sorted(Comparator.comparing(Availability::getAvailableTime))
                     .limit(MAX_RESULTS)
                     .collect(Collectors.toList());
-            addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- 7 dni od wybranego terminu)");
+            addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
         }
 
         logger.info("Znaleziono {} rekomendacji w sumie.", recommendations.size());
