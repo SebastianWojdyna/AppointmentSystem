@@ -260,6 +260,17 @@ public class AvailabilityService {
             addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
         }
 
+        // 6. Priorytet: Wszystkie dostępne terminy w wybranej dacie (+/- 7 dni), jeśli brak specjalizacji i lekarza
+        if (finalDate != null && finalSpecialization == null && finalDoctorId == null) {
+            List<Availability> allDoctorsMatches = allAppointments.stream()
+                    .filter(a -> !a.getIsBooked())
+                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS)) // Ograniczenie zakresu dat
+                    .sorted(Comparator.comparing(Availability::getAvailableTime))
+                    .limit(MAX_RESULTS)
+                    .collect(Collectors.toList());
+            addRecommendations(recommendations, allDoctorsMatches, "Dostępne wizyty w wybranej dacie (+/- " + DEFAULT_MAX_DAYS + " dni)");
+        }
+
         logger.info("Znaleziono {} rekomendacji w sumie.", recommendations.size());
         return recommendations;
     }
