@@ -248,12 +248,12 @@ public class AvailabilityService {
             addRecommendations(recommendations, sameSpecializationNearest, "Lekarze tej samej specjalizacji w najbliższych terminach (+/- " + DEFAULT_MAX_DAYS + " dni)");
         }
 
-        // 5. Priorytet: Lekarze ogólni w tej dacie lub najbliższej dostępnej (+/- 7 dni)
+        // 5. Priorytet: Lekarze pierwszego kontaktu w tej samej dacie lub najbliższej dostępnej (+/- 7 dni)
         if (finalDate != null) {
             List<Availability> generalPractitioners = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
-                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS)) // Dodano ograniczenie do zakresu dat
+                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS))
                     .sorted(Comparator.comparing(Availability::getAvailableTime))
                     .limit(MAX_RESULTS)
                     .collect(Collectors.toList());
@@ -320,6 +320,6 @@ public class AvailabilityService {
             return !appointmentDate.isBefore(targetDate.minusDays(range)) &&
                     !appointmentDate.isAfter(targetDate.plusDays(range));
         }
-        return false; // Jeśli brak targetDate, wyniki nie powinny być brane pod uwagę
+        return false;
     }
 }
