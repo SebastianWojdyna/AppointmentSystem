@@ -261,10 +261,10 @@ public class AvailabilityService {
         }
 
         // 6. Priorytet: Wszystkie dostępne terminy w wybranej dacie (+/- 7 dni), jeśli brak specjalizacji i lekarza
-        if (finalDate != null && finalSpecialization == null && finalDoctorId == null) {
+        if (finalDate != null && (finalSpecialization == null || finalSpecialization.isEmpty()) && finalDoctorId == null) {
             List<Availability> allDoctorsMatches = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
-                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS)) // Ograniczenie zakresu dat
+                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS))
                     .sorted(Comparator.comparing(Availability::getAvailableTime))
                     .limit(MAX_RESULTS)
                     .collect(Collectors.toList());
