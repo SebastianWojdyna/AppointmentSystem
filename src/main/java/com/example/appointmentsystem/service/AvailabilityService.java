@@ -213,6 +213,8 @@ public class AvailabilityService {
 
         List<AvailabilityDto> recommendations = new ArrayList<>();
 
+        boolean isGeneralPractitionersDisplayed = false;
+
         // 1. Priorytet: Dokładne dopasowanie wszystkich kryteriów
         List<Availability> exactMatches = allAppointments.stream()
                 .filter(a -> !a.getIsBooked())
@@ -249,7 +251,7 @@ public class AvailabilityService {
         }
 
         // 5. Priorytet: Lekarze pierwszego kontaktu w tej samej dacie lub najbliższej dostępnej (+/- 7 dni)
-        if (finalDate != null && (finalSpecialization != null || finalDoctorId != null)) {
+        if (finalDate != null && (finalSpecialization != null || finalDoctorId != null) && !isGeneralPractitionersDisplayed) {
             List<Availability> generalPractitioners = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
@@ -269,6 +271,7 @@ public class AvailabilityService {
                     .limit(MAX_RESULTS)
                     .collect(Collectors.toList());
             addRecommendations(recommendations, allDoctorsMatches, "Dostępne wizyty w wybranej dacie (+/- " + DEFAULT_MAX_DAYS + " dni)");
+            isGeneralPractitionersDisplayed = true; // Flaga ustawiona na true
         }
 
         logger.info("Znaleziono {} rekomendacji w sumie.", recommendations.size());
