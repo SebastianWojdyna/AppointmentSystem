@@ -213,37 +213,6 @@ public class AvailabilityService {
 
         List<AvailabilityDto> recommendations = new ArrayList<>();
 
-        boolean isDateOnlySearch = (finalDate != null && finalSpecialization == null && finalDoctorId == null);
-        boolean isGeneralPractitionersDisplayed = false;
-
-        logger.debug("isDateOnlySearch: {}", isDateOnlySearch);
-
-        // 6. Priorytet: Wszystkie dostępne terminy w wybranej dacie (+/- 7 dni)
-        if (isDateOnlySearch) {
-            logger.info("Priorytet 6: Generowanie wizyt dla wyszukiwania tylko po dacie.");
-            List<Availability> allDoctorsMatches = allAppointments.stream()
-                    .filter(a -> !a.getIsBooked())
-                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS))
-                    .sorted(Comparator.comparing(Availability::getAvailableTime))
-                    .limit(MAX_RESULTS)
-                    .collect(Collectors.toList());
-            addRecommendations(recommendations, allDoctorsMatches, "Dostępne wizyty w wybranej dacie (+/- " + DEFAULT_MAX_DAYS + " dni)");
-            isGeneralPractitionersDisplayed = true;
-        }
-
-        // 5. Priorytet: Lekarze pierwszego kontaktu
-        if (!isGeneralPractitionersDisplayed && finalDate != null && (finalSpecialization != null || finalDoctorId != null)) {
-            logger.info("Priorytet 5: Generowanie lekarzy pierwszego kontaktu.");
-            List<Availability> generalPractitioners = allAppointments.stream()
-                    .filter(a -> !a.getIsBooked())
-                    .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
-                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS))
-                    .sorted(Comparator.comparing(Availability::getAvailableTime))
-                    .limit(MAX_RESULTS)
-                    .collect(Collectors.toList());
-            addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
-        }
-
         // 1. Priorytet: Dokładne dopasowanie wszystkich kryteriów
         List<Availability> exactMatches = allAppointments.stream()
                 .filter(a -> !a.getIsBooked())
@@ -277,6 +246,18 @@ public class AvailabilityService {
         if (finalSpecialization != null) {
             List<Availability> sameSpecializationNearest = findNearestAppointments(allAppointments, null, null, finalSpecialization);
             addRecommendations(recommendations, sameSpecializationNearest, "Lekarze tej samej specjalizacji w najbliższych terminach (+/- " + DEFAULT_MAX_DAYS + " dni)");
+        }
+
+        // 5. Priorytet: Lekarze ogólni w tej dacie lub najbliższej dostępnej (+/- 7 dni)
+        if (finalDate != null) {
+            List<Availability> generalPractitioners = allAppointments.stream()
+                    .filter(a -> !a.getIsBooked())
+                    .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
+                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS)) // Dodano ograniczenie do zakresu dat
+                    .sorted(Comparator.comparing(Availability::getAvailableTime))
+                    .limit(MAX_RESULTS)
+                    .collect(Collectors.toList());
+            addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
         }
 
         logger.info("Znaleziono {} rekomendacji w sumie.", recommendations.size());
@@ -328,6 +309,6 @@ public class AvailabilityService {
             return !appointmentDate.isBefore(targetDate.minusDays(range)) &&
                     !appointmentDate.isAfter(targetDate.plusDays(range));
         }
-        return false;
+        return false; // Jeśli brak targetDate, wyniki nie powinny być brane pod uwagę
     }
 }
