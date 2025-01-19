@@ -230,6 +230,7 @@ public class AvailabilityService {
 
         // 5. Priorytet: Lekarze pierwszego kontaktu w tej samej dacie lub najbliższej dostępnej (+/- 7 dni)
         if (!isGeneralPractitionersDisplayed && finalDate != null && (finalSpecialization != null || finalDoctorId != null)) {
+            logger.info("Priorytet 5: Generowanie lekarzy pierwszego kontaktu.");
             List<Availability> generalPractitioners = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
@@ -238,6 +239,11 @@ public class AvailabilityService {
                     .limit(MAX_RESULTS)
                     .collect(Collectors.toList());
             addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
+        }
+
+        // Logowanie dla debugowania
+        if (isGeneralPractitionersDisplayed) {
+            logger.info("Priorytet 5 został pominięty, ponieważ aktywował się priorytet 6.");
         }
 
         // 1. Priorytet: Dokładne dopasowanie wszystkich kryteriów
