@@ -215,6 +215,30 @@ public class AvailabilityService {
 
         boolean isGeneralPractitionersDisplayed = false;
 
+        // 6. Priorytet: Wszystkie dostępne terminy w wybranej dacie (+/- 7 dni), jeśli brak specjalizacji i lekarza
+        if (finalDate != null && finalSpecialization == null && finalDoctorId == null) {
+            List<Availability> allDoctorsMatches = allAppointments.stream()
+                    .filter(a -> !a.getIsBooked())
+                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS))
+                    .sorted(Comparator.comparing(Availability::getAvailableTime))
+                    .limit(MAX_RESULTS)
+                    .collect(Collectors.toList());
+            addRecommendations(recommendations, allDoctorsMatches, "Dostępne wizyty w wybranej dacie (+/- " + DEFAULT_MAX_DAYS + " dni)");
+            isGeneralPractitionersDisplayed = true; // Ustawienie flagi
+        }
+
+        // 5. Priorytet: Lekarze pierwszego kontaktu w tej samej dacie lub najbliższej dostępnej (+/- 7 dni)
+        if (finalDate != null && (finalSpecialization != null || finalDoctorId != null) && !isGeneralPractitionersDisplayed) {
+            List<Availability> generalPractitioners = allAppointments.stream()
+                    .filter(a -> !a.getIsBooked())
+                    .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
+                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS))
+                    .sorted(Comparator.comparing(Availability::getAvailableTime))
+                    .limit(MAX_RESULTS)
+                    .collect(Collectors.toList());
+            addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
+        }
+
         // 1. Priorytet: Dokładne dopasowanie wszystkich kryteriów
         List<Availability> exactMatches = allAppointments.stream()
                 .filter(a -> !a.getIsBooked())
@@ -248,30 +272,6 @@ public class AvailabilityService {
         if (finalSpecialization != null) {
             List<Availability> sameSpecializationNearest = findNearestAppointments(allAppointments, null, null, finalSpecialization);
             addRecommendations(recommendations, sameSpecializationNearest, "Lekarze tej samej specjalizacji w najbliższych terminach (+/- " + DEFAULT_MAX_DAYS + " dni)");
-        }
-
-        // 5. Priorytet: Lekarze pierwszego kontaktu w tej samej dacie lub najbliższej dostępnej (+/- 7 dni)
-        if (finalDate != null && (finalSpecialization != null || finalDoctorId != null) && !isGeneralPractitionersDisplayed) {
-            List<Availability> generalPractitioners = allAppointments.stream()
-                    .filter(a -> !a.getIsBooked())
-                    .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
-                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS))
-                    .sorted(Comparator.comparing(Availability::getAvailableTime))
-                    .limit(MAX_RESULTS)
-                    .collect(Collectors.toList());
-            addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
-        }
-
-        // 6. Priorytet: Wszystkie dostępne terminy w wybranej dacie (+/- 7 dni), jeśli brak specjalizacji i lekarza
-        if (finalDate != null && finalSpecialization == null && finalDoctorId == null) {
-            List<Availability> allDoctorsMatches = allAppointments.stream()
-                    .filter(a -> !a.getIsBooked())
-                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS))
-                    .sorted(Comparator.comparing(Availability::getAvailableTime))
-                    .limit(MAX_RESULTS)
-                    .collect(Collectors.toList());
-            addRecommendations(recommendations, allDoctorsMatches, "Dostępne wizyty w wybranej dacie (+/- " + DEFAULT_MAX_DAYS + " dni)");
-            isGeneralPractitionersDisplayed = true; // Flaga ustawiona na true
         }
 
         logger.info("Znaleziono {} rekomendacji w sumie.", recommendations.size());
