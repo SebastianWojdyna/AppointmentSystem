@@ -216,8 +216,11 @@ public class AvailabilityService {
         boolean isDateOnlySearch = (finalDate != null && finalSpecialization == null && finalDoctorId == null);
         boolean isGeneralPractitionersDisplayed = false;
 
-        // 6. Priorytet: Wszystkie dostępne terminy w wybranej dacie (+/- 7 dni), jeśli brak specjalizacji i lekarza
+        logger.debug("isDateOnlySearch: {}", isDateOnlySearch);
+
+        // 6. Priorytet: Wszystkie dostępne terminy w wybranej dacie (+/- 7 dni)
         if (isDateOnlySearch) {
+            logger.info("Priorytet 6: Generowanie wizyt dla wyszukiwania tylko po dacie.");
             List<Availability> allDoctorsMatches = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS))
@@ -225,10 +228,10 @@ public class AvailabilityService {
                     .limit(MAX_RESULTS)
                     .collect(Collectors.toList());
             addRecommendations(recommendations, allDoctorsMatches, "Dostępne wizyty w wybranej dacie (+/- " + DEFAULT_MAX_DAYS + " dni)");
-            isGeneralPractitionersDisplayed = true; // Ustawienie flagi, aby wykluczyć priorytet 5
+            isGeneralPractitionersDisplayed = true;
         }
 
-        // 5. Priorytet: Lekarze pierwszego kontaktu w tej samej dacie lub najbliższej dostępnej (+/- 7 dni)
+        // 5. Priorytet: Lekarze pierwszego kontaktu
         if (!isGeneralPractitionersDisplayed && finalDate != null && (finalSpecialization != null || finalDoctorId != null)) {
             logger.info("Priorytet 5: Generowanie lekarzy pierwszego kontaktu.");
             List<Availability> generalPractitioners = allAppointments.stream()
@@ -239,11 +242,6 @@ public class AvailabilityService {
                     .limit(MAX_RESULTS)
                     .collect(Collectors.toList());
             addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
-        }
-
-        // Logowanie dla debugowania
-        if (isGeneralPractitionersDisplayed) {
-            logger.info("Priorytet 5 został pominięty, ponieważ aktywował się priorytet 6.");
         }
 
         // 1. Priorytet: Dokładne dopasowanie wszystkich kryteriów
