@@ -249,7 +249,7 @@ public class AvailabilityService {
         }
 
         // 5. Priorytet: Lekarze pierwszego kontaktu w tej samej dacie lub najbliższej dostępnej (+/- 7 dni)
-        if (finalDate != null && (finalSpecialization != null || (finalDoctorId != null && !finalDoctorId.equals("")))) {
+        if (finalDate != null && (finalSpecialization != null || finalDoctorId != null)) {
             List<Availability> generalPractitioners = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
@@ -260,9 +260,8 @@ public class AvailabilityService {
             addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
         }
 
-
         // 6. Priorytet: Wszystkie dostępne terminy w wybranej dacie (+/- 7 dni), jeśli brak specjalizacji i lekarza
-        if (finalDate != null && (finalSpecialization == null || finalSpecialization.isEmpty()) && finalDoctorId == null) {
+        if (finalDate != null && finalSpecialization == null && finalDoctorId == null) {
             List<Availability> allDoctorsMatches = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
                     .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS))
