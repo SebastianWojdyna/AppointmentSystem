@@ -32,7 +32,12 @@ export class AdminDashboardComponent implements OnInit {
     this.clearMessages();
     this.http.get<any>('https://appointment-system-backend.azurewebsites.net/api/admin/users').subscribe({
       next: (response) => {
-        this.users = response.content || [];
+        this.users = response.content.map((user: any) => {
+          return {
+            ...user,
+            specialization: user.role === 'DOCTOR' ? user.specialization || '-' : '-' // Dodanie specjalizacji dla DOCTOR
+          };
+        });
       },
       error: (err) => {
         console.error('Błąd ładowania użytkowników:', err);
@@ -40,6 +45,7 @@ export class AdminDashboardComponent implements OnInit {
       }
     });
   }
+
 
   // Dodanie nowego użytkownika
   addUser(): void {
