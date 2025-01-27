@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,13 +34,17 @@ public class AdminController {
 
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Page<User>> getUsers(@RequestParam(defaultValue = "0") int page,
-                                               @RequestParam(defaultValue = "50") int size) {
+    public ResponseEntity<List<Map<String, Object>>> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        logger.info("Fetching user list, page: {}, size: {}", page, size);
-        Page<User> users = userService.getAllUsers(pageable);
-        return ResponseEntity.ok(users);
+        logger.info("Fetching user list with specializations, page: {}, size: {}", page, size);
+
+        List<Map<String, Object>> usersWithDetails = userService.getAllUsersWithSpecialization(pageable);
+        return ResponseEntity.ok(usersWithDetails);
     }
+
+
 
     @PostMapping("/users")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
