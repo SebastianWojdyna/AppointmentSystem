@@ -44,16 +44,15 @@
       <table class="table table-hover table-bordered text-center">
         <thead class="thead-light">
         <tr>
-          <th>ID</th>
           <th>Username</th>
           <th>Email</th>
           <th>Rola</th>
+          <th>Specjalizacja</th>
           <th>Akcje</th>
         </tr>
         </thead>
         <tbody>
         <tr *ngFor="let user of users" class="table-light">
-          <td>{{ user.id }}</td>
           <td>{{ user.username }}</td>
           <td>{{ user.email }}</td>
           <td>
@@ -61,6 +60,7 @@
               <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
             </select>
           </td>
+          <td>{{ user.role === 'DOCTOR' ? user.specialization || '-' : '-' }}</td>
           <td>
             <!-- Nowoczesne przyciski -->
             <button class="btn btn-outline-danger btn-sm" (click)="deleteUser(user.id)">Usuń</button>
