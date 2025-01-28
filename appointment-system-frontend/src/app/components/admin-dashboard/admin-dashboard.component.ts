@@ -29,68 +29,69 @@ export class AdminDashboardComponent implements OnInit {
 
   // Ładowanie użytkowników
   loadUsers(): void {
-    this.clearMessages();
     this.http.get<any>('https://appointment-system-backend.azurewebsites.net/api/admin/users').subscribe({
       next: (response) => {
-        this.users = response.map((user: any) => {
+        this.users = response.content.map((user: any) => {
           return {
             ...user,
-            specialization: user.role === 'DOCTOR' ? user.specialization || '-' : '-' // Dodanie specjalizacji dla DOCTOR
+            specialization: user.role === 'DOCTOR' ? user.specialization || '-' : '-'
           };
         });
       },
       error: (err) => {
+        this.showErrorMessage('Nie udało się załadować listy użytkowników.');
         console.error('Błąd ładowania użytkowników:', err);
-        this.errorMessage = 'Nie udało się załadować listy użytkowników.';
       }
     });
   }
 
   // Dodanie nowego użytkownika
   addUser(): void {
-    this.clearMessages();
     if (!this.newUser.password) {
-      this.errorMessage = 'Hasło jest wymagane!';
+      this.showErrorMessage('Hasło jest wymagane!');
       return;
     }
 
-    // Usuń specjalizację, jeśli rola nie jest DOCTOR
     const userToAdd = { ...this.newUser };
     if (userToAdd.role !== 'DOCTOR') {
       delete userToAdd.specialization;
     }
 
-    this.http.post('https://appointment-system-backend.azurewebsites.net/api/admin/users', userToAdd).subscribe({
-      next: () => {
-        this.successMessage = 'Użytkownik dodany pomyślnie!';
+    this.http.post<{ message: string }>(
+      'https://appointment-system-backend.azurewebsites.net/api/admin/users',
+      userToAdd
+    ).subscribe({
+      next: (response) => {
+        this.showSuccessMessage(response.message);
         this.newUser = { username: '', email: '', password: '', role: '', specialization: '' };
         this.loadUsers();
       },
       error: (err) => {
+        this.showErrorMessage('Nie udało się dodać użytkownika.');
         console.error('Błąd dodawania użytkownika:', err);
-        this.errorMessage = 'Nie udało się dodać użytkownika.';
       }
     });
   }
 
   // Zmiana roli użytkownika
   changeUserRole(userId: number, newRole: string): void {
-    this.clearMessages();
-
     const requestBody: any = { role: newRole };
 
     if (newRole === 'DOCTOR') {
       requestBody.specialization = this.updatedUser.specialization || 'Not Specified';
     }
 
-    this.http.patch(`https://appointment-system-backend.azurewebsites.net/api/admin/users/${userId}/role`, requestBody).subscribe({
-      next: () => {
-        this.successMessage = `Rola użytkownika została zmieniona na ${newRole}.`;
+    this.http.patch<{ message: string }>(
+      `https://appointment-system-backend.azurewebsites.net/api/admin/users/${userId}/role`,
+      requestBody
+    ).subscribe({
+      next: (response) => {
+        this.showSuccessMessage(response.message);
         this.loadUsers();
       },
       error: (err) => {
+        this.showErrorMessage('Nie udało się zmienić roli użytkownika.');
         console.error('Błąd zmiany roli:', err);
-        this.errorMessage = 'Nie udało się zmienić roli użytkownika.';
       }
     });
   }
@@ -108,41 +109,54 @@ export class AdminDashboardComponent implements OnInit {
 
   // Aktualizacja użytkownika
   updateUser(): void {
-    this.clearMessages();
-
     const userToUpdate = { ...this.updatedUser };
     if (userToUpdate.role !== 'DOCTOR') {
       delete userToUpdate.specialization;
     }
 
-    this.http.put(`https://appointment-system-backend.azurewebsites.net/api/admin/users/${userToUpdate.id}`, userToUpdate).subscribe({
-      next: () => {
-        this.successMessage = 'Dane użytkownika zostały zaktualizowane.';
+    this.http.put<{ message: string }>(
+      `https://appointment-system-backend.azurewebsites.net/api/admin/users/${userToUpdate.id}`,
+      userToUpdate
+    ).subscribe({
+      next: (response) => {
+        this.showSuccessMessage(response.message);
         this.updatedUser = { id: null, username: '', email: '', role: '', specialization: '' };
         this.loadUsers();
       },
       error: (err) => {
+        this.showErrorMessage('Nie udało się zaktualizować użytkownika.');
         console.error('Błąd aktualizacji użytkownika:', err);
-        this.errorMessage = 'Nie udało się zaktualizować użytkownika.';
       }
     });
   }
 
   // Usunięcie użytkownika
   deleteUser(userId: number): void {
-    this.clearMessages();
     if (confirm('Czy na pewno chcesz usunąć tego użytkownika?')) {
-      this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/admin/users/${userId}`).subscribe({
-        next: () => {
-          this.successMessage = 'Użytkownik został usunięty.';
+      this.http.delete<{ message: string }>(
+        `https://appointment-system-backend.azurewebsites.net/api/admin/users/${userId}`
+      ).subscribe({
+        next: (response) => {
+          this.showSuccessMessage(response.message);
           this.loadUsers();
         },
         error: (err) => {
+          this.showErrorMessage('Nie udało się usunąć użytkownika.');
           console.error('Błąd usuwania użytkownika:', err);
-          this.errorMessage = 'Nie udało się usunąć użytkownika.';
         }
       });
     }
   }
+
+  private showSuccessMessage(message: string): void {
+    this.successMessage = message;
+    setTimeout(() => { this.successMessage = ''; }, 4000);
+  }
+
+  private showErrorMessage(message: string): void {
+    this.errorMessage = message;
+    setTimeout(() => { this.errorMessage = ''; }, 4000);
+  }
+
 
 }
