@@ -205,7 +205,7 @@ public class AvailabilityService {
         logger.info("Podane kryteria - Data: {}, Specjalizacja: {}, ID Lekarza: {}", date, specialization, doctorId);
 
         final String finalSpecialization = resolveSpecialization(specialization, doctorId);
-        final String finalDate = date;
+        final String finalDate = (date != null && !date.isEmpty()) ? date : null; // Zabezpieczenie przed pustą datą
         final Long finalDoctorId = doctorId;
 
         List<Availability> allAppointments = availabilityRepository.findAll();
@@ -250,14 +250,19 @@ public class AvailabilityService {
 
         // 5. Priorytet: Lekarze ogólni w tej dacie lub najbliższej dostępnej (+/- 7 dni)
         if (finalDate != null) {
-            List<Availability> generalPractitioners = allAppointments.stream()
-                    .filter(a -> !a.getIsBooked())
-                    .filter(a -> a.getSpecialization().equalsIgnoreCase("Choroby wewnetrzne") || a.getSpecialization().equalsIgnoreCase("Medycyna rodzinna"))
-                    .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS)) // Dodano ograniczenie do zakresu dat
-                    .sorted(Comparator.comparing(Availability::getAvailableTime))
-                    .limit(MAX_RESULTS)
-                    .collect(Collectors.toList());
-            addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
+            try {
+                LocalDate parsedDate = LocalDate.parse(finalDate);
+                List<Availability> generalPractitioners = allAppointments.stream()
+                        .filter(a -> !a.getIsBooked())
+                        .filter(a -> a.getSpecialization().equalsIgnoreCase("Choroby wewnętrzne") || a.getSpecialization().equalsIgnoreCase("Medycyna rodzinna"))
+                        .filter(a -> isWithinDateRange(a, parsedDate, DEFAULT_MAX_DAYS)) // Ograniczenie do zakresu dat
+                        .sorted(Comparator.comparing(Availability::getAvailableTime))
+                        .limit(MAX_RESULTS)
+                        .collect(Collectors.toList());
+                addRecommendations(recommendations, generalPractitioners, "Lekarze pierwszego kontaktu w tej samej dacie lub najbliższych dostępnych (+/- " + DEFAULT_MAX_DAYS + " dni)");
+            } catch (Exception e) {
+                logger.warn("Niepoprawny format daty: {}", finalDate);
+            }
         }
 
         logger.info("Znaleziono {} rekomendacji w sumie.", recommendations.size());

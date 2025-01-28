@@ -152,44 +152,48 @@ export class PatientDashboardComponent implements OnInit {
 
   getRecommendations(): void {
     console.log('Wywołano getRecommendations');
-    this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability/recommendations', {
-      params: {
-        date: this.filterDate,
-        specialization: this.filterSpecialization !== 'Wybierz specjalizację' ? this.filterSpecialization : '',
-        doctorId: this.filterDoctor !== 'Wybierz lekarza' ? this.getDoctorId(this.filterDoctor) : ''
-      }
-    }).subscribe({
-      next: (recommendations) => {
-        console.log('Rekomendacje z API:', recommendations);
 
-        // Grupowanie rekomendacji według opisu (description)
-        const groupedRecommendations: { [key: string]: any[] } = {};
-        recommendations.forEach(appt => {
-          const description = appt.description || 'Inne';
-          if (!groupedRecommendations[description]) {
-            groupedRecommendations[description] = [];
-          }
-          groupedRecommendations[description].push({
-            ...appt,
-            availableTime: this.parseDate(appt.availableTime)
+    const params: any = {
+      specialization: this.filterSpecialization !== 'Wybierz specjalizację' ? this.filterSpecialization : '',
+      doctorId: this.filterDoctor !== 'Wybierz lekarza' ? this.getDoctorId(this.filterDoctor) : ''
+    };
+
+    if (this.filterDate) {
+      params.date = this.filterDate; // Dodajemy `date` tylko jeśli nie jest puste
+    }
+
+    this.http.get<any[]>('https://appointment-system-backend.azurewebsites.net/api/availability/recommendations', { params })
+      .subscribe({
+        next: (recommendations) => {
+          console.log('Rekomendacje z API:', recommendations);
+
+          // Grupowanie rekomendacji według opisu (description)
+          const groupedRecommendations: { [key: string]: any[] } = {};
+          recommendations.forEach(appt => {
+            const description = appt.description || 'Inne';
+            if (!groupedRecommendations[description]) {
+              groupedRecommendations[description] = [];
+            }
+            groupedRecommendations[description].push({
+              ...appt,
+              availableTime: this.parseDate(appt.availableTime)
+            });
           });
-        });
 
-        // Konwersja grupowanych danych do listy, którą można łatwo iterować w Angularze
-        this.recommendedAppointments = Object.entries(groupedRecommendations).map(([key, value]) => ({
-          description: key,
-          appointments: value
-        }));
+          // Konwersja grupowanych danych do listy, którą można łatwo iterować w Angularze
+          this.recommendedAppointments = Object.entries(groupedRecommendations).map(([key, value]) => ({
+            description: key,
+            appointments: value
+          }));
 
-        console.log('Zgrupowane rekomendacje:', this.recommendedAppointments);
-        $('#recommendationsModal').modal('show');
-      },
-      error: (err) => {
-        console.error('Błąd pobierania rekomendacji:', err);
-      }
-    });
+          console.log('Zgrupowane rekomendacje:', this.recommendedAppointments);
+          $('#recommendationsModal').modal('show');
+        },
+        error: (err) => {
+          console.error('Błąd pobierania rekomendacji:', err);
+        }
+      });
   }
-
 
   getDoctorId(doctorName: string): string {
     const doctor = this.availableAppointments.find(appt => appt.doctor.name === doctorName);
