@@ -45,12 +45,12 @@ export class ReservedAppointmentsComponent implements OnInit {
       this.http.put(`https://appointment-system-backend.azurewebsites.net/api/availability/patient-details/${this.selectedPatientDetails.availabilityId}`, this.selectedPatientDetails)
         .subscribe({
           next: () => {
-            this.successMessage = 'Dane pacjenta zostały zaktualizowane!';
+            this.showSuccessMessage('Dane pacjenta zostały zaktualizowane!');
             this.loadReservedAppointments();
             this.modalService.dismissAll();
           },
           error: (err) => {
-            this.errorMessage = 'Nie udało się zaktualizować danych pacjenta.';
+            this.showErrorMessage('Nie udało się zaktualizować danych pacjenta.');
             console.error('Failed to update patient details:', err);
           }
         });
@@ -61,11 +61,11 @@ export class ReservedAppointmentsComponent implements OnInit {
   cancelAppointment(availabilityId: number): void {
     this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/availability/cancel/${availabilityId}`).subscribe({
       next: () => {
-        this.successMessage = 'Rezerwacja została anulowana!';
+        this.showSuccessMessage('Rezerwacja została anulowana!');
         this.loadReservedAppointments();  // Odświeżenie listy po anulowaniu
       },
       error: (err) => {
-        this.errorMessage = 'Nie udało się anulować rezerwacji.';
+        this.showErrorMessage('Nie udało się anulować rezerwacji.');
         console.error('Failed to cancel appointment:', err);
       }
     });
@@ -82,4 +82,16 @@ export class ReservedAppointmentsComponent implements OnInit {
       return null;
     }
   }
+
+  private showSuccessMessage(message: string): void {
+    this.successMessage = message;
+    setTimeout(() => { this.successMessage = ''; }, 4000); // Komunikat znika po 4 sekundach
+  }
+
+  private showErrorMessage(message: string): void {
+    this.errorMessage = message;
+    setTimeout(() => { this.errorMessage = ''; }, 4000); // Komunikat znika po 4 sekundach
+  }
+
+
 }
