@@ -109,7 +109,6 @@ export class DoctorDashboardComponent implements OnInit {
     this.http.post('https://appointment-system-backend.azurewebsites.net/api/availability/add', requestBody, { responseType: 'text' }).subscribe({
       next: () => {
         this.successMessage = 'Dostępność została dodana!';
-        this.clearForm();
         this.loadDoctorAvailability();
       },
       error: (err) => {
