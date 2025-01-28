@@ -62,7 +62,7 @@ public class AdminController {
 
             User savedUser = userService.registerUser(user, specialization);
 
-            return ResponseEntity.ok(Map.of("message", "User added successfully", "user", savedUser));
+            return ResponseEntity.ok(Map.of("message", "Użytkownik został dodany", "user", savedUser));
         } catch (Exception e) {
             logger.error("Error adding user", e);
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
@@ -84,7 +84,7 @@ public class AdminController {
 
             User updatedUser = userService.updateUserWithSpecialization(id, userToUpdate, specialization);
 
-            return ResponseEntity.ok(Map.of("message", "User updated successfully", "user", updatedUser));
+            return ResponseEntity.ok(Map.of("message", "Użytkownik został edytowany", "user", updatedUser));
         } catch (Exception e) {
             logger.error("Error updating user", e);
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
@@ -97,7 +97,7 @@ public class AdminController {
         try {
             logger.info("Deleting user with ID: {}", id);
             userService.deleteUser(id);
-            return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+            return ResponseEntity.ok(Map.of("message", "Użytkownik został usunięty"));
         } catch (Exception e) {
             logger.error("Error deleting user", e);
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
