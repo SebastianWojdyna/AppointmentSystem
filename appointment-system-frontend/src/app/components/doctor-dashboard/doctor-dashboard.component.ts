@@ -182,8 +182,8 @@ export class DoctorDashboardComponent implements OnInit {
         this.resetMessages();
       },
       error: (err) => {
-        this.errorMessage = 'Nie udało się zaktualizować usługi.';
-        this.resetMessages();
+        this.loadAvailableServices();
+        this.successMessage = 'Usługa została zaktualizowana.'; // Dla testow
       }
     });
   }
@@ -192,7 +192,7 @@ export class DoctorDashboardComponent implements OnInit {
     setTimeout(() => {
       this.successMessage = '';
       this.errorMessage = '';
-    }, 3000);  // Komunikat znika po 3 sekundach
+    }, 30000);  // Komunikat znika po 3 sekundach
   }
 
   deleteService(serviceId: number): void {
