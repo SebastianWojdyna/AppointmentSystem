@@ -252,7 +252,7 @@ public class AvailabilityService {
         if (finalDate != null) {
             List<Availability> generalPractitioners = allAppointments.stream()
                     .filter(a -> !a.getIsBooked())
-                    .filter(a -> a.getSpecialization().equalsIgnoreCase("internista") || a.getSpecialization().equalsIgnoreCase("poz"))
+                    .filter(a -> a.getSpecialization().equalsIgnoreCase("Choroby wewnetrzne") || a.getSpecialization().equalsIgnoreCase("Medycyna rodzinna"))
                     .filter(a -> isWithinDateRange(a, LocalDate.parse(finalDate), DEFAULT_MAX_DAYS)) // Dodano ograniczenie do zakresu dat
                     .sorted(Comparator.comparing(Availability::getAvailableTime))
                     .limit(MAX_RESULTS)
