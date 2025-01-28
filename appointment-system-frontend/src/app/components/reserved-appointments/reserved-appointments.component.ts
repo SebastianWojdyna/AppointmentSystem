@@ -42,12 +42,12 @@ export class ReservedAppointmentsComponent implements OnInit {
 
   savePatientDetails(): void {
     if (this.selectedPatientDetails) {
-      this.http.put<{ message: string }>( // <-- Oczekujemy odpowiedzi zawierającej `message`
+      this.http.put<{ message: string }>(
         `https://appointment-system-backend.azurewebsites.net/api/availability/patient-details/${this.selectedPatientDetails.availabilityId}`,
         this.selectedPatientDetails
       ).subscribe({
         next: (response) => {
-          this.showSuccessMessage(response.message); // <-- Pobieramy komunikat od backendu
+          this.showSuccessMessage(response.message); // Wyświetla komunikat od backendu
           this.loadReservedAppointments();
           this.modalService.dismissAll();
         },
@@ -61,11 +61,11 @@ export class ReservedAppointmentsComponent implements OnInit {
 
   // Anuluje wizytę
   cancelAppointment(availabilityId: number): void {
-    this.http.delete<{ message: string }>( // <-- Oczekujemy odpowiedzi zawierającej `message`
+    this.http.delete<{ message: string }>(
       `https://appointment-system-backend.azurewebsites.net/api/availability/cancel/${availabilityId}`
     ).subscribe({
       next: (response) => {
-        this.showSuccessMessage(response.message); // <-- Pobieramy komunikat od backendu
+        this.showSuccessMessage(response.message); // Wyświetla komunikat od backendu
         this.loadReservedAppointments();
       },
       error: (err) => {
@@ -96,6 +96,5 @@ export class ReservedAppointmentsComponent implements OnInit {
     this.errorMessage = message;
     setTimeout(() => { this.errorMessage = ''; }, 4000); // Komunikat znika po 4 sekundach
   }
-
 
 }
