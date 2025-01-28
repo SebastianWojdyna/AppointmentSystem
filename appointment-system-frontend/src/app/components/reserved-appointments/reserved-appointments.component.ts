@@ -42,27 +42,31 @@ export class ReservedAppointmentsComponent implements OnInit {
 
   savePatientDetails(): void {
     if (this.selectedPatientDetails) {
-      this.http.put(`https://appointment-system-backend.azurewebsites.net/api/availability/patient-details/${this.selectedPatientDetails.availabilityId}`, this.selectedPatientDetails)
-        .subscribe({
-          next: () => {
-            this.showSuccessMessage('Dane pacjenta zostały zaktualizowane!');
-            this.loadReservedAppointments();
-            this.modalService.dismissAll();
-          },
-          error: (err) => {
-            this.showErrorMessage('Nie udało się zaktualizować danych pacjenta.');
-            console.error('Failed to update patient details:', err);
-          }
-        });
+      this.http.put<{ message: string }>( // <-- Oczekujemy odpowiedzi zawierającej `message`
+        `https://appointment-system-backend.azurewebsites.net/api/availability/patient-details/${this.selectedPatientDetails.availabilityId}`,
+        this.selectedPatientDetails
+      ).subscribe({
+        next: (response) => {
+          this.showSuccessMessage(response.message); // <-- Pobieramy komunikat od backendu
+          this.loadReservedAppointments();
+          this.modalService.dismissAll();
+        },
+        error: (err) => {
+          this.showErrorMessage('Nie udało się zaktualizować danych pacjenta.');
+          console.error('Failed to update patient details:', err);
+        }
+      });
     }
   }
 
   // Anuluje wizytę
   cancelAppointment(availabilityId: number): void {
-    this.http.delete(`https://appointment-system-backend.azurewebsites.net/api/availability/cancel/${availabilityId}`).subscribe({
-      next: () => {
-        this.showSuccessMessage('Rezerwacja została anulowana!');
-        this.loadReservedAppointments();  // Odświeżenie listy po anulowaniu
+    this.http.delete<{ message: string }>( // <-- Oczekujemy odpowiedzi zawierającej `message`
+      `https://appointment-system-backend.azurewebsites.net/api/availability/cancel/${availabilityId}`
+    ).subscribe({
+      next: (response) => {
+        this.showSuccessMessage(response.message); // <-- Pobieramy komunikat od backendu
+        this.loadReservedAppointments();
       },
       error: (err) => {
         this.showErrorMessage('Nie udało się anulować rezerwacji.');
