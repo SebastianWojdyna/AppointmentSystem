@@ -1,6 +1,16 @@
 <div class="container mt-4">
   <h1 class="mb-4 text-center">Panel Administratora</h1>
 
+  <!-- 🔹 Komunikat sukcesu -->
+  <div *ngIf="successMessage" class="alert alert-success text-center">
+    {{ successMessage }}
+  </div>
+
+  <!-- 🔹 Komunikat błędu -->
+  <div *ngIf="errorMessage" class="alert alert-danger text-center">
+    {{ errorMessage }}
+  </div>
+
   <!-- Formularz dodawania użytkownika -->
   <div class="card mb-4">
     <div class="card-header">Dodaj nowego użytkownika</div>
@@ -35,16 +45,6 @@
         <button type="submit" class="btn btn-outline-success">Dodaj użytkownika</button>
       </form>
     </div>
-  </div>
-
-  <!-- 🔹 Komunikat sukcesu -->
-  <div *ngIf="successMessage" class="alert alert-success text-center">
-    {{ successMessage }}
-  </div>
-
-  <!-- 🔹 Komunikat błędu -->
-  <div *ngIf="errorMessage" class="alert alert-danger text-center">
-    {{ errorMessage }}
   </div>
 
   <!-- Lista użytkowników -->

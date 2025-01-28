@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
     selector: 'app-reserved-appointments',
@@ -14,7 +15,7 @@ export class ReservedAppointmentsComponent implements OnInit {
   successMessage: string = '';
   errorMessage: string = '';
 
-  constructor(private http: HttpClient, private modalService: NgbModal) {}
+  constructor(private http: HttpClient, private modalService: NgbModal, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadReservedAppointments();
@@ -89,12 +90,13 @@ export class ReservedAppointmentsComponent implements OnInit {
 
   private showSuccessMessage(message: string): void {
     this.successMessage = message;
-    setTimeout(() => { this.successMessage = ''; }, 4000); // Komunikat znika po 4 sekundach
+    this.cdr.detectChanges();  // Wymuszenie odświeżenia widoku
+    setTimeout(() => { this.successMessage = ''; this.cdr.detectChanges(); }, 4000);
   }
 
   private showErrorMessage(message: string): void {
     this.errorMessage = message;
-    setTimeout(() => { this.errorMessage = ''; }, 4000); // Komunikat znika po 4 sekundach
+    this.cdr.detectChanges();  // Wymuszenie odświeżenia widoku
+    setTimeout(() => { this.errorMessage = ''; this.cdr.detectChanges(); }, 4000);
   }
-
 }
