@@ -1,6 +1,16 @@
 <div class="container mt-4">
   <h3 class="mb-4 text-center section-title">Twoje zarezerwowane wizyty</h3>
 
+  <!-- 🔹 Komunikat sukcesu -->
+  <div *ngIf="successMessage" class="alert alert-success text-center">
+    {{ successMessage }}
+  </div>
+
+  <!-- 🔹 Komunikat błędu -->
+  <div *ngIf="errorMessage" class="alert alert-danger text-center">
+    {{ errorMessage }}
+  </div>
+
   <table class="table table-bordered text-center">
     <thead>
     <tr>
