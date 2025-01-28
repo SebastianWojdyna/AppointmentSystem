@@ -219,7 +219,7 @@ public class AvailabilityController {
 
         availabilityService.savePatientDetails(patientDetails);
 
-        return ResponseEntity.ok(Collections.singletonMap("message", "Patient details updated successfully."));
+        return ResponseEntity.ok(Collections.singletonMap("message", "Dane pacjenta zostały zaktualizowane."));
     }
 
     @GetMapping("/patient-details/{availabilityId}")
