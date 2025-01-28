@@ -60,6 +60,7 @@ export class AdminDashboardComponent implements OnInit {
     this.http.post<{ message: string }>('https://appointment-system-backend.azurewebsites.net/api/admin/users', userToAdd).subscribe({
       next: (response) => {
         this.showSuccessMessage(response.message);
+        this.successMessage = 'Użytkownik został dodany!';
         this.newUser = { username: '', email: '', password: '', role: '', specialization: '' };
         this.loadUsers();
       },
@@ -114,6 +115,7 @@ export class AdminDashboardComponent implements OnInit {
     this.http.put<{ message: string }>(`https://appointment-system-backend.azurewebsites.net/api/admin/users/${userToUpdate.id}`, userToUpdate).subscribe({
       next: (response) => {
         this.showSuccessMessage(response.message);
+        this.successMessage = 'Użytkownik został edytowany!';
         this.updatedUser = { id: null, username: '', email: '', role: '', specialization: '' };
         this.loadUsers();
       },
@@ -131,6 +133,7 @@ export class AdminDashboardComponent implements OnInit {
       this.http.delete<{ message: string }>(`https://appointment-system-backend.azurewebsites.net/api/admin/users/${userId}`).subscribe({
         next: (response) => {
           this.showSuccessMessage(response.message);
+          this.successMessage = 'Użytkownik został usnięty!';
           this.loadUsers();
         },
         error: (err) => {

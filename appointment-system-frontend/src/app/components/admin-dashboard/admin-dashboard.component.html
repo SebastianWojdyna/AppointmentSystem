@@ -47,6 +47,16 @@
     </div>
   </div>
 
+  <!-- 🔹 Komunikat sukcesu -->
+  <div *ngIf="successMessage" class="alert alert-success text-center">
+    {{ successMessage }}
+  </div>
+
+  <!-- 🔹 Komunikat błędu -->
+  <div *ngIf="errorMessage" class="alert alert-danger text-center">
+    {{ errorMessage }}
+  </div>
+
   <!-- Lista użytkowników -->
   <div class="card">
     <div class="card-header">Lista użytkowników</div>
@@ -80,6 +90,16 @@
         </tbody>
       </table>
     </div>
+  </div>
+
+  <!-- 🔹 Komunikat sukcesu -->
+  <div *ngIf="successMessage" class="alert alert-success text-center">
+    {{ successMessage }}
+  </div>
+
+  <!-- 🔹 Komunikat błędu -->
+  <div *ngIf="errorMessage" class="alert alert-danger text-center">
+    {{ errorMessage }}
   </div>
 
   <!-- Formularz edycji użytkownika -->
