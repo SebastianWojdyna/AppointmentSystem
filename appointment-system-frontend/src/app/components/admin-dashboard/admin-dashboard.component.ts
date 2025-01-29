@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
     selector: 'app-admin-dashboard',
@@ -15,7 +16,7 @@ export class AdminDashboardComponent implements OnInit {
   newUser: any = { username: '', email: '', password: '', role: '', specialization: '' }; // Nowy użytkownik
   updatedUser: any = { id: null, username: '', email: '', role: '', specialization: '' }; // Użytkownik do edycji
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -29,7 +30,6 @@ export class AdminDashboardComponent implements OnInit {
 
   // Ładowanie użytkowników
   loadUsers(): void {
-    this.clearMessages();
     this.http.get<any>('https://appointment-system-backend.azurewebsites.net/api/admin/users').subscribe({
       next: (response) => {
         this.users = response.map((user: any) => ({
@@ -60,7 +60,6 @@ export class AdminDashboardComponent implements OnInit {
     this.http.post<{ message: string }>('https://appointment-system-backend.azurewebsites.net/api/admin/users', userToAdd).subscribe({
       next: (response) => {
         this.showSuccessMessage(response.message);
-        this.successMessage = 'Użytkownik został dodany!';
         this.newUser = { username: '', email: '', password: '', role: '', specialization: '' };
         this.loadUsers();
       },
@@ -115,7 +114,6 @@ export class AdminDashboardComponent implements OnInit {
     this.http.put<{ message: string }>(`https://appointment-system-backend.azurewebsites.net/api/admin/users/${userToUpdate.id}`, userToUpdate).subscribe({
       next: (response) => {
         this.showSuccessMessage(response.message);
-        this.successMessage = 'Użytkownik został edytowany!';
         this.updatedUser = { id: null, username: '', email: '', role: '', specialization: '' };
         this.loadUsers();
       },
@@ -133,7 +131,6 @@ export class AdminDashboardComponent implements OnInit {
       this.http.delete<{ message: string }>(`https://appointment-system-backend.azurewebsites.net/api/admin/users/${userId}`).subscribe({
         next: (response) => {
           this.showSuccessMessage(response.message);
-          this.successMessage = 'Użytkownik został usnięty!';
           this.loadUsers();
         },
         error: (err) => {
@@ -146,11 +143,13 @@ export class AdminDashboardComponent implements OnInit {
 
   private showSuccessMessage(message: string): void {
     this.successMessage = message;
+    this.cdr.detectChanges();  // Wymuszenie odświeżenia widoku
     setTimeout(() => { this.successMessage = ''; }, 4000);
   }
 
   private showErrorMessage(message: string): void {
     this.errorMessage = message;
+    this.cdr.detectChanges();  // Wymuszenie odświeżenia widoku
     setTimeout(() => { this.errorMessage = ''; }, 4000);
   }
 }
